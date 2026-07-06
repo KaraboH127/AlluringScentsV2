@@ -22,14 +22,15 @@ export function HomePage() {
       />
 
       <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden section-surface">
-        <Image src={siteConfig.images.hero} alt="Luxury fragrance hero" className="absolute inset-0 h-full w-full object-cover opacity-12" />
-        <div className="absolute inset-0" />
-        <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center px-4 sm:px-6">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-2xl space-y-7">
-            <p className="text-xs uppercase tracking-[0.24em] accent-gold">Alluring Scents</p>
-            <h1 className="text-5xl leading-tight site-heading md:text-7xl">Discover Your Signature.</h1>
+        <Image src={siteConfig.images.hero} alt="Luxury fragrance hero" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-white/95" />
+        <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.8fr)_1fr]">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="space-y-7">
+            <p className="text-xs uppercase tracking-[0.24em] accent-gold">South Africa • Est. 2024 • Premium Fragrances</p>
+            <h1 className="text-5xl leading-tight site-heading md:text-7xl">Alluring Scents</h1>
+            <p className="text-sm uppercase tracking-[0.3em] text-muted">Savour the seduction</p>
             <p className="max-w-xl text-base text-muted md:text-lg">
-              Luxury fragrances crafted for those who leave lasting impressions.
+              A perfume house with a sharper point of view: rich blends, clean presentation, and a signature trail that lingers long after the room forgets everything else.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/collections">
@@ -38,6 +39,26 @@ export function HomePage() {
               <Link to="/our-story">
                 <Button variant="secondary">Explore Our Story</Button>
               </Link>
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="grid gap-5">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-muted">Current Edit</p>
+            </div>
+            <div className="border border-white/40 bg-white/30 p-8 shadow-lg shadow-black/10 backdrop-blur-xl backdrop-saturate-150">
+              <p className="text-xs uppercase tracking-[0.24em] accent-gold">Signature Collection</p>
+              <h2 className="mt-4 text-3xl leading-tight md:text-4xl">Scents curated to feel magnetic, modern, and unmistakably yours.</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="border border-white/40 bg-white/25 p-6 shadow-sm shadow-black/10 backdrop-blur-xl backdrop-saturate-150">
+                <p className="text-xl font-semibold">01</p>
+                <p className="mt-4 text-sm text-muted">Luxury blends built for presence, memory, and mood.</p>
+              </div>
+              <div className="border border-white/40 bg-white/25 p-6 shadow-sm shadow-black/10 backdrop-blur-xl backdrop-saturate-150">
+                <p className="text-xl font-semibold">ZA</p>
+                <p className="mt-4 text-sm text-muted">Curated in South Africa with a cleaner, fashion-led point of view.</p>
+              </div>
             </div>
           </motion.div>
         </div>
