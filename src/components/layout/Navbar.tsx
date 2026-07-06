@@ -22,11 +22,11 @@ export function Navbar() {
   const { itemCount, toggleDrawer } = useCart();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#1F1F1F] bg-black/90 backdrop-blur">
+    <header className="sticky top-0 z-40 site-header backdrop-blur">
       <Container className="flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <img src={siteConfig.images.logo} alt="Alluring Scents logo" className="h-8 w-8" />
-          <span className="text-sm uppercase tracking-[0.2em] text-white">Alluring Scents</span>
+          <span className="text-sm uppercase tracking-[0.2em] site-brand">Alluring Scents</span>
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
@@ -35,7 +35,7 @@ export function Navbar() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `text-xs uppercase tracking-[0.16em] transition ${isActive ? "text-[#C9A227]" : "text-[#EAEAEA] hover:text-white"}`
+                `text-xs uppercase tracking-[0.16em] transition nav-link ${isActive ? "nav-link--active" : ""}`
               }
             >
               {item.label}
@@ -49,7 +49,7 @@ export function Navbar() {
           </Button>
           <button
             aria-label="Open navigation menu"
-            className="inline-flex h-10 w-10 items-center justify-center border border-[#2A2A2A] text-white transition hover:border-[#C9A227] hover:text-[#C9A227] md:hidden"
+            className="menu-button inline-flex h-10 w-10 items-center justify-center border transition md:hidden"
             onClick={() => setMenuOpen(true)}
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">

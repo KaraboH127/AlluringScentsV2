@@ -15,10 +15,10 @@ export function FragranceHero({ fragrance, selectedSize }: { fragrance: Fragranc
       <img src={fragrance.image} alt={fragrance.name} className="h-[420px] w-full object-cover" />
       <div className="space-y-5">
         <Badge>{collection.name}</Badge>
-        <h1 className="text-4xl tracking-tight text-white md:text-5xl">{fragrance.name}</h1>
-        <p className="text-sm uppercase tracking-[0.18em] text-[#D4D4D4]">{fragrance.extrait}</p>
-        <p className="max-w-xl text-base leading-relaxed text-[#BEBEBE]">{fragrance.description}</p>
-        <p className="text-2xl text-[#C9A227]">{formatCurrency(collection.prices[selectedSize])}</p>
+        <h1 className="text-4xl tracking-tight site-heading md:text-5xl">{fragrance.name}</h1>
+        <p className="text-sm uppercase tracking-[0.18em] text-muted">{fragrance.extrait}</p>
+        <p className="max-w-xl text-base leading-relaxed text-muted">{fragrance.description}</p>
+        <p className="text-2xl accent-gold">{formatCurrency(collection.prices[selectedSize])}</p>
       </div>
     </div>
   );

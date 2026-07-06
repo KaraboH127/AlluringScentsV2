@@ -20,14 +20,14 @@ export function HomePage() {
         schema={organizationSchema()}
       />
 
-      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden">
-        <img src={siteConfig.images.hero} alt="Luxury fragrance hero" className="absolute inset-0 h-full w-full object-cover opacity-40" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/50" />
+      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden section-surface">
+        <img src={siteConfig.images.hero} alt="Luxury fragrance hero" className="absolute inset-0 h-full w-full object-cover opacity-12" />
+        <div className="absolute inset-0" />
         <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-2xl space-y-7">
-            <p className="text-xs uppercase tracking-[0.24em] text-[#C9A227]">Alluring Scents</p>
-            <h1 className="text-5xl leading-tight text-white md:text-7xl">Discover Your Signature.</h1>
-            <p className="max-w-xl text-base text-[#D4D4D4] md:text-lg">
+            <p className="text-xs uppercase tracking-[0.24em] accent-gold">Alluring Scents</p>
+            <h1 className="text-5xl leading-tight site-heading md:text-7xl">Discover Your Signature.</h1>
+            <p className="max-w-xl text-base text-muted md:text-lg">
               Luxury fragrances crafted for those who leave lasting impressions.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -44,8 +44,8 @@ export function HomePage() {
 
       <Section>
         <div className="max-w-3xl space-y-4">
-          <h2 className="text-3xl text-white md:text-4xl">Our Story</h2>
-          <p className="leading-relaxed text-[#CFCFCF]">
+          <h2 className="text-3xl site-heading md:text-4xl">Our Story</h2>
+          <p className="leading-relaxed text-muted">
             Founded in 2024 by Thato Padi and Katlego Kennedy, Alluring Scents was born from a conversation about fragrance, identity, and creating something timeless. That conversation evolved into a fragrance house dedicated to making luxury perfume accessible without compromising quality.
           </p>
           <Link to="/our-story">
@@ -54,8 +54,8 @@ export function HomePage() {
         </div>
       </Section>
 
-      <Section className="border-y border-[#1D1D1D] bg-[#0D0D0D]">
-        <h2 className="mb-8 text-3xl text-white md:text-4xl">Collections</h2>
+      <Section className="border-y section-surface">
+        <h2 className="mb-8 text-3xl site-heading md:text-4xl">Collections</h2>
         <div className="grid gap-6 md:grid-cols-2">
           {collections.map((collection) => (
             <CollectionCard key={collection.id} collection={collection} />
@@ -64,17 +64,17 @@ export function HomePage() {
       </Section>
 
       <Section>
-        <h2 className="mb-8 text-3xl text-white md:text-4xl">Featured Fragrances</h2>
+        <h2 className="mb-8 text-3xl site-heading md:text-4xl">Featured Fragrances</h2>
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <CollectionGrid fragrances={featured} />
         </motion.div>
       </Section>
 
-      <Section className="border-y border-[#1D1D1D] bg-[#0D0D0D]">
-        <h2 className="mb-8 text-3xl text-white md:text-4xl">Why Choose Alluring Scents</h2>
+      <Section className="border-y section-surface">
+        <h2 className="mb-8 text-3xl site-heading md:text-4xl">Why Choose Alluring Scents</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {homeWhyChoose.map((item) => (
-            <p key={item} className="border border-[#222] px-4 py-6 text-sm text-[#EAEAEA]">
+            <p key={item} className="border px-4 py-6 text-sm text-muted">
               {item}
             </p>
           ))}
@@ -82,8 +82,8 @@ export function HomePage() {
       </Section>
 
       <Section>
-        <div className="space-y-5 border border-[#222] p-8 text-center">
-          <h2 className="text-3xl text-white md:text-4xl">Luxury begins with your signature scent.</h2>
+        <div className="space-y-5 border p-8 text-center">
+          <h2 className="text-3xl site-heading md:text-4xl">Luxury begins with your signature scent.</h2>
           <Link to="/collections" className="inline-block">
             <Button>Shop Collection</Button>
           </Link>

@@ -12,12 +12,12 @@ export function SuccessPage() {
     <>
       <SEOHead title="Order Success | Alluring Scents" description="Your order has been received by Alluring Scents." path="/success" />
       <Section>
-        <div className="mx-auto grid max-w-4xl gap-8 border border-[#222] p-8 md:grid-cols-2 md:items-center">
+        <div className="mx-auto grid max-w-4xl gap-8 border p-8 md:grid-cols-2 md:items-center">
           <img src={siteConfig.images.collection} alt="Luxury illustration" className="h-64 w-full object-cover" />
           <div className="space-y-4">
-            <h1 className="text-4xl text-white">Thank You.</h1>
-            <p className="text-lg text-[#EAEAEA]">Your Order Has Been Received.</p>
-            <p className="text-sm text-[#BEBEBE]">Order confirmation: {order}</p>
+            <h1 className="text-4xl site-heading">Thank You.</h1>
+            <p className="text-lg text-muted">Your Order Has Been Received.</p>
+            <p className="text-sm text-muted">Order confirmation: {order}</p>
             <div className="flex flex-wrap gap-3">
               <Link to="/collections">
                 <Button>Continue Shopping</Button>

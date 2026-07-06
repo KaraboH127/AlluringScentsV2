@@ -11,9 +11,9 @@ export function CheckoutSummary() {
   const { subtotal } = useCart();
   const delivery = subtotal > 0 ? 95 : 0;
   return (
-    <div className="space-y-4 border border-[#222] p-6">
-      <h3 className="text-lg text-white">Order Summary</h3>
-      <div className="space-y-2 text-sm text-[#D4D4D4]">
+    <div className="space-y-4 border p-6">
+      <h3 className="text-lg site-heading">Order Summary</h3>
+      <div className="space-y-2 text-sm text-muted">
         <div className="flex justify-between">
           <span>Subtotal</span>
           <span>{formatCurrency(subtotal)}</span>
@@ -22,12 +22,12 @@ export function CheckoutSummary() {
           <span>Delivery</span>
           <span>{formatCurrency(delivery)}</span>
         </div>
-        <div className="flex justify-between border-t border-[#2A2A2A] pt-2 text-base text-[#C9A227]">
+        <div className="flex justify-between border-t pt-2 text-base accent-gold">
           <span>Total</span>
           <span>{formatCurrency(subtotal + delivery)}</span>
         </div>
       </div>
-      <p className="border-t border-[#2A2A2A] pt-4 text-sm text-[#AFAFAF]">Payment integration coming soon.</p>
+      <p className="border-t pt-4 text-sm text-muted">Payment integration coming soon.</p>
     </div>
   );
 }

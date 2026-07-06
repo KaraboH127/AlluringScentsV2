@@ -17,9 +17,9 @@ export function Button({ children, className, variant = "primary", ...props }: B
     <button
       className={cn(
         "inline-flex items-center justify-center border px-5 py-3 text-sm uppercase tracking-[0.16em] transition",
-        variant === "primary" && "border-[#C9A227] bg-[#C9A227] text-black hover:bg-transparent hover:text-[#C9A227]",
-        variant === "secondary" && "border-white text-white hover:border-[#C9A227] hover:text-[#C9A227]",
-        variant === "ghost" && "border-[#2A2A2A] text-white hover:border-[#C9A227] hover:text-[#C9A227]",
+        variant === "primary" && "btn-primary",
+        variant === "secondary" && "btn-secondary",
+        variant === "ghost" && "btn-ghost",
         className,
       )}
       {...props}

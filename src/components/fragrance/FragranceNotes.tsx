@@ -5,18 +5,18 @@ import type { Fragrance } from "../../types/site";
  */
 export function FragranceNotes({ fragrance }: { fragrance: Fragrance }) {
   return (
-    <div className="grid gap-4 border border-[#222] p-6 sm:grid-cols-3">
+    <div className="grid gap-4 border p-6 sm:grid-cols-3">
       <div>
-        <p className="text-xs uppercase tracking-[0.14em] text-[#C9A227]">Top Note</p>
-        <p className="mt-2 text-sm text-[#EAEAEA]">{fragrance.notes.top}</p>
+        <p className="text-xs uppercase tracking-[0.14em] accent-gold">Top Note</p>
+        <p className="mt-2 text-sm text-muted">{fragrance.notes.top}</p>
       </div>
       <div>
-        <p className="text-xs uppercase tracking-[0.14em] text-[#C9A227]">Middle Note</p>
-        <p className="mt-2 text-sm text-[#EAEAEA]">{fragrance.notes.middle}</p>
+        <p className="text-xs uppercase tracking-[0.14em] accent-gold">Middle Note</p>
+        <p className="mt-2 text-sm text-muted">{fragrance.notes.middle}</p>
       </div>
       <div>
-        <p className="text-xs uppercase tracking-[0.14em] text-[#C9A227]">Base Note</p>
-        <p className="mt-2 text-sm text-[#EAEAEA]">{fragrance.notes.base}</p>
+        <p className="text-xs uppercase tracking-[0.14em] accent-gold">Base Note</p>
+        <p className="mt-2 text-sm text-muted">{fragrance.notes.base}</p>
       </div>
     </div>
   );

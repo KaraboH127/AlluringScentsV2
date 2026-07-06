@@ -12,7 +12,7 @@ export function JournalArticlePage() {
   if (!article) {
     return (
       <Section>
-        <h1 className="text-3xl text-white">Article not found.</h1>
+        <h1 className="text-3xl site-heading">Article not found.</h1>
       </Section>
     );
   }
@@ -49,16 +49,16 @@ export function JournalArticlePage() {
           ]}
         />
         <article className="mx-auto max-w-3xl space-y-8">
-          <header className="space-y-4 border-b border-[#222] pb-6">
-            <p className="text-xs uppercase tracking-[0.14em] text-[#C9A227]">{article.readingMinutes} min read</p>
-            <h1 className="text-4xl leading-tight text-white md:text-5xl">{article.title}</h1>
-            <p className="text-sm text-[#BEBEBE]">{article.metaDescription}</p>
+          <header className="space-y-4 panel-header pb-6">
+            <p className="text-xs uppercase tracking-[0.14em] accent-gold">{article.readingMinutes} min read</p>
+            <h1 className="text-4xl leading-tight site-heading md:text-5xl">{article.title}</h1>
+            <p className="text-sm text-muted">{article.metaDescription}</p>
           </header>
 
-          <section className="space-y-6 text-[#D4D4D4]">
+          <section className="space-y-6 text-muted">
             {article.headings.map((heading, index) => (
               <div key={heading} className="space-y-3">
-                <h2 className="text-2xl text-white">{heading}</h2>
+                <h2 className="text-2xl site-heading">{heading}</h2>
                 <p>{article.content[index] ?? ""}</p>
               </div>
             ))}
@@ -67,16 +67,16 @@ export function JournalArticlePage() {
             ))}
           </section>
 
-          <section className="border-t border-[#222] pt-6 text-sm">
-            <p className="mb-3 text-[#C9A227]">Related Links</p>
+          <section className="border-t pt-6 text-sm">
+            <p className="mb-3 accent-gold">Related Links</p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/collections" className="text-[#EAEAEA] hover:text-[#C9A227]">
+              <Link to="/collections" className="text-muted hover:accent-gold">
                 Browse Collection
               </Link>
-              <Link to="/pricing" className="text-[#EAEAEA] hover:text-[#C9A227]">
+              <Link to="/pricing" className="text-muted hover:accent-gold">
                 View Pricing
               </Link>
-              <Link to="/our-story" className="text-[#EAEAEA] hover:text-[#C9A227]">
+              <Link to="/our-story" className="text-muted hover:accent-gold">
                 Read Our Story
               </Link>
             </div>

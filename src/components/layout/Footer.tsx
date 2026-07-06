@@ -10,15 +10,15 @@ import { Container } from "./Container";
  */
 export function Footer() {
   return (
-    <footer className="border-t border-[#1F1F1F] py-12">
+    <footer className="py-12 site-footer">
       <Container className="space-y-5 text-center md:text-left">
-        <p className="text-xs uppercase tracking-[0.2em] text-[#C9A227]">{siteConfig.brand}</p>
-        <p className="max-w-xl text-sm text-[#BEBEBE]">
+        <p className="text-xs uppercase tracking-[0.2em] footer-brand">{siteConfig.brand}</p>
+        <p className="max-w-xl text-sm footer-desc">
           Luxury fragrances crafted for identity, confidence, and timeless self-expression.
         </p>
         <div className="flex flex-wrap justify-center gap-4 md:justify-start">
           {siteConfig.navigation.map((item) => (
-            <Link key={item.path} to={item.path} className="text-xs uppercase tracking-[0.15em] text-[#EAEAEA] hover:text-[#C9A227]">
+            <Link key={item.path} to={item.path} className="text-xs uppercase tracking-[0.15em] footer-link">
               {item.label}
             </Link>
           ))}

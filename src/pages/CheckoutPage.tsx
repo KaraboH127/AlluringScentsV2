@@ -22,9 +22,9 @@ export function CheckoutPage() {
     <>
       <SEOHead title="Checkout | Alluring Scents" description="Complete your fragrance order and review your premium checkout summary." path="/checkout" />
       <Section>
-        <h1 className="mb-10 text-4xl text-white md:text-5xl">Checkout</h1>
+        <h1 className="mb-10 text-4xl site-heading md:text-5xl">Checkout</h1>
         {items.length === 0 ? (
-          <p className="text-[#BEBEBE]">Your cart is empty.</p>
+          <p className="text-muted">Your cart is empty.</p>
         ) : (
           <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
             <form className="grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>

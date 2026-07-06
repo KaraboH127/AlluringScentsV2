@@ -30,7 +30,7 @@ export function BackToTop() {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
           transition={{ duration: 0.22 }}
-          className="fixed bottom-6 right-4 z-30 inline-flex h-11 w-11 items-center justify-center rounded-full bg-black text-white ring-1 ring-[#262626] transition hover:bg-[#C9A227] hover:text-black sm:right-6"
+          className="fixed bottom-6 right-4 z-30 inline-flex h-11 w-11 items-center justify-center rounded-full back-to-top ring-1 ring-0 transition hover:back-to-top sm:right-6"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">

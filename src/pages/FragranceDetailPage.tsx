@@ -21,7 +21,7 @@ export function FragranceDetailPage() {
   if (!fragrance) {
     return (
       <Section>
-        <h1 className="text-3xl text-white">Fragrance not found.</h1>
+        <h1 className="text-3xl site-heading">Fragrance not found.</h1>
       </Section>
     );
   }
@@ -55,29 +55,29 @@ export function FragranceDetailPage() {
         <FragranceHero fragrance={fragrance} selectedSize={size} />
       </Section>
 
-      <Section className="border-y border-[#1D1D1D] bg-[#0D0D0D]">
+      <Section className="border-y section-surface">
         <FragranceNotes fragrance={fragrance} />
       </Section>
 
       <Section>
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="space-y-5 text-sm text-[#D2D2D2]">
+          <div className="space-y-5 text-sm text-muted">
             <p>
-              <span className="text-[#C9A227]">Best For:</span> {fragrance.bestFor}
+              <span className="accent-gold">Best For:</span> {fragrance.bestFor}
             </p>
             <p>
-              <span className="text-[#C9A227]">Suggested Occasions:</span> {fragrance.occasions.join(", ")}
+              <span className="accent-gold">Suggested Occasions:</span> {fragrance.occasions.join(", ")}
             </p>
             <p>
-              <span className="text-[#C9A227]">Suggested Personality:</span> {fragrance.personality}
+              <span className="accent-gold">Suggested Personality:</span> {fragrance.personality}
             </p>
             <p>
               Available Sizes: 10ml ({formatCurrency(collection.prices["10ml"])}), 50ml ({formatCurrency(collection.prices["50ml"])}), 100ml ({formatCurrency(collection.prices["100ml"])})
             </p>
           </div>
 
-          <div className="space-y-4 border border-[#222] p-6">
-            <label className="block space-y-2 text-xs uppercase tracking-[0.14em] text-[#BEBEBE]">
+          <div className="space-y-4 border p-6">
+            <label className="block space-y-2 text-xs uppercase tracking-[0.14em] text-muted">
               Size Selector
               <Select value={size} onChange={(event) => setSize(event.target.value as SizeOption)}>
                 <option value="10ml">10ml - {formatCurrency(collection.prices["10ml"])}</option>
@@ -86,7 +86,7 @@ export function FragranceDetailPage() {
               </Select>
             </label>
             <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.14em] text-[#BEBEBE]">Quantity Selector</p>
+              <p className="text-xs uppercase tracking-[0.14em] text-muted">Quantity Selector</p>
               <QuantitySelector value={quantity} onChange={setQuantity} />
             </div>
             <Button onClick={() => addToCart(fragrance.id, size, quantity)} className="w-full">

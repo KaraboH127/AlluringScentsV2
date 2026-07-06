@@ -85,7 +85,7 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
         <>
           <motion.button
             aria-label="Close navigation drawer"
-            className="fixed inset-0 z-50 bg-black/55"
+            className="fixed inset-0 z-50 overlay-dark"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -94,7 +94,7 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
           />
           <motion.aside
             ref={drawerRef}
-            className="fixed right-0 top-0 z-[60] flex h-screen w-[85vw] max-w-[400px] flex-col border-l border-[#EAEAEA] bg-white text-black"
+            className="fixed right-0 top-0 z-[60] flex h-screen w-[85vw] max-w-[400px] flex-col panel-surface"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -102,10 +102,10 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
             aria-modal="true"
             role="dialog"
           >
-            <div className="flex items-center justify-between border-b border-[#EAEAEA] px-6 py-5">
-              <p className="text-xs uppercase tracking-[0.18em] text-[#111]">Menu</p>
+            <div className="flex items-center justify-between panel-header px-6 py-5">
+              <p className="text-xs uppercase tracking-[0.18em] site-heading">Menu</p>
               <button
-                className="text-sm uppercase tracking-[0.14em] text-[#111] transition hover:text-[#C9A227]"
+                className="text-sm uppercase tracking-[0.14em] text-muted transition hover:accent-gold"
                 onClick={onClose}
                 aria-label="Close menu"
               >
@@ -120,12 +120,12 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                   to={item.path}
                   onClick={onClose}
                   className={({ isActive }) =>
-                    `flex items-center justify-between border-b border-[#EAEAEA] py-4 text-sm uppercase tracking-[0.16em] transition ${isActive ? "text-[#C9A227]" : "text-[#111] hover:text-[#C9A227]"}`
+                    `flex items-center justify-between divider py-4 text-sm uppercase tracking-[0.16em] transition nav-link ${isActive ? "nav-link--active" : ""}`
                   }
                 >
                   <span>{item.label}</span>
                   {item.label === "Cart" && itemCount > 0 ? (
-                    <span className="inline-flex min-w-6 items-center justify-center rounded-full border border-[#C9A227] px-1.5 py-0.5 text-[10px] text-[#111]">
+                    <span className="inline-flex min-w-6 items-center justify-center rounded-full count-badge">
                       {itemCount}
                     </span>
                   ) : null}
@@ -133,12 +133,8 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
               ))}
             </nav>
 
-            <div className="border-t border-[#EAEAEA] px-6 py-10">
-              <Link
-                to="/collections"
-                onClick={onClose}
-                className="inline-flex w-full items-center justify-center border border-black bg-black px-6 py-3 text-xs uppercase tracking-[0.16em] text-white transition hover:border-[#C9A227] hover:bg-[#C9A227] hover:text-black"
-              >
+            <div className="border-t px-6 py-10">
+              <Link to="/collections" onClick={onClose} className="inline-flex w-full items-center justify-center border btn-primary px-6 py-3 text-xs uppercase tracking-[0.16em] transition">
                 Shop Collection
               </Link>
             </div>

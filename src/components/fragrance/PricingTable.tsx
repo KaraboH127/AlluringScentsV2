@@ -6,11 +6,11 @@ import { formatCurrency } from "../../config/site";
  */
 export function PricingTable({ collection }: { collection: Collection }) {
   return (
-    <div className="border border-[#222]">
+    <div className="border">
       {(["10ml", "50ml", "100ml"] as const).map((size) => (
-        <div key={size} className="flex items-center justify-between border-b border-[#222] px-4 py-3 last:border-b-0">
-          <span className="text-sm text-[#EAEAEA]">{size}</span>
-          <span className="text-sm text-[#C9A227]">{formatCurrency(collection.prices[size])}</span>
+        <div key={size} className="flex items-center justify-between divider px-4 py-3 last:border-b-0">
+          <span className="text-sm text-muted">{size}</span>
+          <span className="text-sm accent-gold">{formatCurrency(collection.prices[size])}</span>
         </div>
       ))}
     </div>

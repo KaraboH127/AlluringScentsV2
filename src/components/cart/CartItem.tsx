@@ -17,17 +17,17 @@ export function CartItem({ item }: { item: CartEntry }) {
   const unitPrice = collection.prices[item.size];
 
   return (
-    <div className="border-b border-[#222] py-4">
+    <div className="border-b py-4">
       <div className="flex items-start gap-3">
         <img src={fragrance.image} alt={fragrance.name} className="h-20 w-16 object-cover" />
         <div className="flex-1 space-y-2">
-          <p className="text-sm text-white">{fragrance.name}</p>
-          <p className="text-xs uppercase tracking-[0.15em] text-[#AFAFAF]">{item.size}</p>
-          <p className="text-xs text-[#C9A227]">{formatCurrency(unitPrice)}</p>
+          <p className="text-sm site-heading">{fragrance.name}</p>
+          <p className="text-xs uppercase tracking-[0.15em] text-muted">{item.size}</p>
+          <p className="text-xs accent-gold">{formatCurrency(unitPrice)}</p>
           <QuantitySelector value={item.quantity} onChange={(value) => updateQuantity(item.fragranceId, item.size, value)} />
         </div>
         <button
-          className="text-xs uppercase tracking-[0.12em] text-[#BEBEBE] hover:text-[#C9A227]"
+          className="text-xs uppercase tracking-[0.12em] text-muted hover:accent-gold"
           onClick={() => removeFromCart(item.fragranceId, item.size)}
         >
           Remove

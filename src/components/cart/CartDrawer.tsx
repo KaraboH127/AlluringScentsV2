@@ -18,30 +18,30 @@ export function CartDrawer() {
       {isDrawerOpen && (
         <>
           <motion.div
-            className="fixed inset-0 z-50 bg-black/70"
+            className="fixed inset-0 z-50 overlay-dark"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => toggleDrawer(false)}
           />
           <motion.aside
-            className="fixed right-0 top-0 z-50 flex h-screen w-full max-w-md flex-col border-l border-[#2A2A2A] bg-[#090909]"
+            className="fixed right-0 top-0 z-50 flex h-screen w-full max-w-md flex-col panel-surface"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.25 }}
           >
-            <div className="flex items-center justify-between border-b border-[#222] p-5">
-              <h3 className="text-lg text-white">Cart</h3>
-              <button className="text-sm text-[#C9A227]" onClick={() => toggleDrawer(false)}>
+            <div className="flex items-center justify-between panel-header p-5">
+              <h3 className="text-lg site-heading">Cart</h3>
+              <button className="text-sm accent-gold" onClick={() => toggleDrawer(false)}>
                 Close
               </button>
             </div>
             <div className="flex-1 overflow-auto p-5">
-              {items.length === 0 ? <p className="text-sm text-[#AFAFAF]">Your cart is empty.</p> : items.map((item) => <CartItem key={`${item.fragranceId}-${item.size}`} item={item} />)}
+              {items.length === 0 ? <p className="text-sm text-muted">Your cart is empty.</p> : items.map((item) => <CartItem key={`${item.fragranceId}-${item.size}`} item={item} />)}
             </div>
-            <div className="space-y-3 border-t border-[#222] p-5">
-              <div className="flex items-center justify-between text-sm text-[#EAEAEA]">
+            <div className="space-y-3 border-t p-5">
+              <div className="flex items-center justify-between text-sm text-muted">
                 <span>Subtotal</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>

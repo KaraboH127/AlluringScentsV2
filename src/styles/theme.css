@@ -1,13 +1,185 @@
 :root {
-  color-scheme: dark;
+  /* Overall theme: 60% soft white, 30% near-black, 10% gold accents */
+  color-scheme: light;
+
+  /* Core palette */
+  --color-bg: #FBFBF9; /* very soft white */
+  --color-surface: #FFFFFF; /* surface white for cards */
+  --color-text: #0B0B0B; /* near-black, less harsh than pure #000 */
+  --color-muted: #6F6F6F; /* for secondary text */
+
+  /* Gold accent (used sparingly) */
+  --color-gold: #C9A66B; /* soft, warm gold */
+  --color-gold-strong: #B58F46; /* slightly deeper gold for emphasis */
+
+  /* Utility */
+  --color-border: #E9E6E0;
 }
 
 body {
   font-family: "Times New Roman", "Georgia", serif;
-  background: #000;
-  color: #fff;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 a {
+  color: var(--color-gold);
   text-decoration: none;
+}
+
+/* Prefer subtle outlines and dividers */
+hr, .divider {
+  border-color: var(--color-border);
+}
+
+/* Buttons and interactive elements should favour dark text on light surfaces
+   with gold used for primary accents. Avoid aggressive contrasts. */
+.btn-primary {
+  background: var(--color-gold);
+  color: var(--color-text);
+}
+
+.text-muted {
+  color: var(--color-muted);
+}
+
+/* Button variants */
+.btn-primary {
+  border: 1px solid var(--color-gold);
+  background: var(--color-gold);
+  color: var(--color-text);
+}
+.btn-primary:hover {
+  background: transparent;
+  color: var(--color-gold-strong);
+}
+
+.btn-secondary {
+  border: 1px solid var(--color-surface);
+  background: transparent;
+  color: var(--color-text);
+}
+.btn-secondary:hover {
+  color: var(--color-gold-strong);
+  border-color: var(--color-gold-strong);
+}
+
+.btn-ghost {
+  border: 1px solid rgba(11,11,11,0.08);
+  background: transparent;
+  color: var(--color-text);
+}
+.btn-ghost:hover {
+  color: var(--color-gold-strong);
+  border-color: var(--color-gold-strong);
+}
+
+/* Header / Navigation */
+.site-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.site-brand {
+  color: var(--color-text);
+}
+
+.nav-link {
+  color: var(--color-muted);
+}
+.nav-link:hover {
+  color: var(--color-text);
+}
+.nav-link--active {
+  color: var(--color-gold);
+}
+
+.menu-button {
+  border: 1px solid rgba(11,11,11,0.08);
+  color: var(--color-text);
+  background: transparent;
+}
+.menu-button:hover {
+  border-color: var(--color-gold-strong);
+  color: var(--color-gold-strong);
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
+}
+.site-footer .footer-brand {
+  color: var(--color-gold);
+}
+.site-footer .footer-desc {
+  color: #9b9b9b;
+}
+.site-footer .footer-link {
+  color: var(--color-muted);
+}
+.site-footer .footer-link:hover {
+  color: var(--color-gold-strong);
+}
+
+/* General utilities */
+.site-heading {
+  color: var(--color-text);
+}
+.accent-gold {
+  color: var(--color-gold);
+}
+.section-surface {
+  background: var(--color-surface);
+}
+
+/* Overlays and panels */
+.overlay-dark {
+  background: rgba(11, 11, 11, 0.65);
+}
+.panel-surface {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-left: 1px solid var(--color-border);
+}
+.panel-header {
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+/* Back-to-top / small circular actions */
+.back-to-top {
+  background: var(--color-text);
+  color: var(--color-surface);
+  box-shadow: 0 1px 0 rgba(11,11,11,0.04);
+}
+.back-to-top:hover {
+  background: var(--color-gold-strong);
+  color: var(--color-text);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  border: 1px solid rgba(201,166,107,0.35);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-gold);
+}
+
+/* Compact numeric badge used for counts */
+.count-badge {
+  display: inline-flex;
+  min-width: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-gold);
+  color: var(--color-text);
+  background: transparent;
+  font-size: 0.625rem;
 }

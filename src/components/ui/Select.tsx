@@ -9,7 +9,7 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
     <select
       {...props}
       className={cn(
-        "h-11 w-full border border-[#2A2A2A] bg-[#111] px-3 text-sm text-white outline-none focus:border-[#C9A227]",
+        "h-11 w-full border bg-transparent px-3 text-sm text-muted outline-none focus:border-gold",
         props.className,
       )}
     />
