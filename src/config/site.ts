@@ -83,7 +83,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Daily elegance",
     occasions: ["Workdays", "Brunch", "Evening transitions"],
     personality: "Refined, calm, effortlessly confident",
-    image: "/bottle-placeholder.jpg",
+    image: "/image10.png",
   },
   {
     id: "whiskey-sour",
@@ -100,7 +100,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Bold evenings",
     occasions: ["Dinner dates", "Lounges", "Night events"],
     personality: "Magnetic, adventurous, polished",
-    image: "/bottle-placeholder.jpg",
+    image: "/image9.png",
   },
   {
     id: "velvet-nectar",
@@ -117,7 +117,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Signature wear",
     occasions: ["Celebrations", "Day-to-night wear", "Special meetings"],
     personality: "Elegant, expressive, poised",
-    image: "/bottle-placeholder.jpg",
+    image: "/image5.png",
   },
   {
     id: "midnight-oud",
@@ -134,7 +134,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "After-dark presence",
     occasions: ["Formal events", "Winter evenings", "Statement moments"],
     personality: "Commanding, luxurious, deep",
-    image: "/bottle-placeholder.jpg",
+    image: "/image6.png",
   },
   {
     id: "purple-rain",
@@ -151,7 +151,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Fresh confidence",
     occasions: ["Day events", "Creative work", "Weekend outings"],
     personality: "Modern, romantic, expressive",
-    image: "/bottle-placeholder.jpg",
+    image: "/image3.png",
   },
   {
     id: "taboo",
@@ -168,7 +168,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Evening attraction",
     occasions: ["Date nights", "Cocktail evenings", "Luxury occasions"],
     personality: "Fearless, alluring, unforgettable",
-    image: "/bottle-placeholder.jpg",
+    image: "/image2.png",
   },
   {
     id: "ocean-eyes",
@@ -185,7 +185,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Clean versatility",
     occasions: ["Warm days", "Travel", "Office wear"],
     personality: "Fresh, focused, relaxed",
-    image: "/bottle-placeholder.jpg",
+    image: "/image1.png",
   },
   {
     id: "fresh",
@@ -202,7 +202,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Everyday ease",
     occasions: ["Morning routines", "Gym-to-day transitions", "Hot weather"],
     personality: "Minimal, energetic, sharp",
-    image: "/bottle-placeholder.jpg",
+    image: "/image0.png",
   },
   {
     id: "9-lives",
@@ -219,7 +219,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Statement identity",
     occasions: ["High-impact meetings", "Events", "Nightlife"],
     personality: "Bold, charismatic, uncompromising",
-    image: "/bottle-placeholder.jpg",
+    image: "/image12.png",
   },
   {
     id: "golden-amber",
@@ -236,7 +236,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Luxury evenings",
     occasions: ["Formal dinners", "Celebratory nights", "Cool seasons"],
     personality: "Confident, warm, regal",
-    image: "/bottle-placeholder.jpg",
+    image: "/image11.png",
   },
   {
     id: "island-water",
@@ -253,7 +253,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Luxurious freshness",
     occasions: ["Resort wear", "Summer evenings", "Holiday escapes"],
     personality: "Relaxed, premium, luminous",
-    image: "/bottle-placeholder.jpg",
+    image: "/image7.png",
   },
   {
     id: "signature",
@@ -270,7 +270,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Defining moments",
     occasions: ["Daily signature wear", "Business", "Elegant evenings"],
     personality: "Timeless, assured, sophisticated",
-    image: "/bottle-placeholder.jpg",
+    image: "/image4.png",
   },
 ];
 
