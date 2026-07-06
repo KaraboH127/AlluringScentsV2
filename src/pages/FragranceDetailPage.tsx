@@ -41,7 +41,7 @@ export function FragranceDetailPage() {
           name: fragrance.name,
           brand: "Alluring Scents",
           description: fragrance.description,
-          image: fragrance.image,
+          image: `${siteConfig.domain}${fragrance.image}`,
           offers: {
             "@type": "AggregateOffer",
             priceCurrency: "ZAR",

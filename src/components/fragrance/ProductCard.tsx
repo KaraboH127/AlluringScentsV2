@@ -4,6 +4,7 @@ import { useCart } from "../../store/CartContext";
 import type { Fragrance } from "../../types/site";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
+import { Image } from "../ui/Image";
 
 /**
  * Reusable fragrance commerce card.
@@ -17,7 +18,7 @@ export function ProductCard({ fragrance }: { fragrance: Fragrance }) {
 
   return (
     <article className="space-y-4 border panel-surface p-4">
-      <img src={fragrance.image} alt={fragrance.name} className="h-64 w-full object-cover" />
+      <Image src={fragrance.image} alt={fragrance.name} className="h-64 w-full object-cover" />
       <div className="space-y-2">
         <Badge>{collection?.name}</Badge>
         <h3 className="text-xl site-heading">{fragrance.name}</h3>

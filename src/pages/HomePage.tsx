@@ -4,6 +4,7 @@ import { SEOHead } from "../SEOHead";
 import { CollectionCard } from "../components/fragrance/CollectionCard";
 import { CollectionGrid } from "../components/fragrance/CollectionGrid";
 import { Section } from "../components/layout/Section";
+import { Image } from "../components/ui/Image";
 import { Button } from "../components/ui/Button";
 import { collections, featuredFragrances, fragrances, homeWhyChoose, siteConfig } from "../config/site";
 import { organizationSchema } from "../utils/seo";
@@ -21,7 +22,7 @@ export function HomePage() {
       />
 
       <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden section-surface">
-        <img src={siteConfig.images.hero} alt="Luxury fragrance hero" className="absolute inset-0 h-full w-full object-cover opacity-12" />
+        <Image src={siteConfig.images.hero} alt="Luxury fragrance hero" className="absolute inset-0 h-full w-full object-cover opacity-12" />
         <div className="absolute inset-0" />
         <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-2xl space-y-7">

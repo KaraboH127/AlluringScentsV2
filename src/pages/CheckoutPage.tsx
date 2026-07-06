@@ -20,7 +20,7 @@ export function CheckoutPage() {
 
   return (
     <>
-      <SEOHead title="Checkout | Alluring Scents" description="Complete your fragrance order and review your premium checkout summary." path="/checkout" />
+      <SEOHead title="Checkout | Alluring Scents" description="Complete your fragrance order and review your premium checkout summary." path="/checkout" robots="noindex, nofollow" />
       <Section>
         <h1 className="mb-10 text-4xl site-heading md:text-5xl">Checkout</h1>
         {items.length === 0 ? (

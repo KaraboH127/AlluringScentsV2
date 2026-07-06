@@ -3,6 +3,7 @@ import { SEOHead } from "../SEOHead";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { siteConfig } from "../config/site";
+import { Image } from "../components/ui/Image";
 
 export function SuccessPage() {
   const [params] = useSearchParams();
@@ -10,10 +11,10 @@ export function SuccessPage() {
 
   return (
     <>
-      <SEOHead title="Order Success | Alluring Scents" description="Your order has been received by Alluring Scents." path="/success" />
+      <SEOHead title="Order Success | Alluring Scents" description="Your order has been received by Alluring Scents." path="/success" robots="noindex, nofollow" />
       <Section>
         <div className="mx-auto grid max-w-4xl gap-8 border p-8 md:grid-cols-2 md:items-center">
-          <img src={siteConfig.images.collection} alt="Luxury illustration" className="h-64 w-full object-cover" />
+          <Image src={siteConfig.images.collection} alt="Luxury illustration" className="h-64 w-full object-cover" />
           <div className="space-y-4">
             <h1 className="text-4xl site-heading">Thank You.</h1>
             <p className="text-lg text-muted">Your Order Has Been Received.</p>

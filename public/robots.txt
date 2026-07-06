@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Sitemap: https://alluringscents.co.za/sitemap.xml
+
+# Crawl-delay can be added for low-tier hosting, but avoid unless necessary
+# Crawl-delay: 10
+
+# Disallow sensitive or duplicate paths
+Disallow: /cart
+Disallow: /checkout
+Disallow: /success

@@ -8,6 +8,11 @@ interface SEOHeadProps {
   image?: string;
   type?: "website" | "article" | "product";
   schema?: Record<string, unknown> | Record<string, unknown>[];
+  /**
+   * Optional robots directive (e.g. "noindex, nofollow" or "index,follow").
+   * Defaults to `index,follow` when omitted.
+   */
+  robots?: string;
 }
 
 /**
@@ -37,10 +42,13 @@ function setMeta(name: string, content: string, property = false) {
  *
  * This centralizes metadata behavior so each page only provides content.
  */
-export function SEOHead({ title, description, path, image, type = "website", schema }: SEOHeadProps) {
+export function SEOHead({ title, description, path, image, type = "website", schema, robots }: SEOHeadProps) {
   useEffect(() => {
     const canonical = `${siteConfig.domain}${path}`;
     document.title = title;
+
+    // Robots directive (index by default)
+    setMeta("robots", robots ?? "index,follow");
 
     setMeta("description", description);
     setMeta("keywords", siteConfig.keywords.join(", "));
@@ -71,7 +79,7 @@ export function SEOHead({ title, description, path, image, type = "website", sch
       script.text = JSON.stringify(schema);
       document.head.appendChild(script);
     }
-  }, [description, image, path, schema, title]);
+  }, [description, image, path, schema, title, robots]);
 
   return null;
 }

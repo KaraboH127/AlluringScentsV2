@@ -2,6 +2,7 @@ import { collections, formatCurrency, fragrances } from "../../config/site";
 import { useCart } from "../../store/CartContext";
 import type { CartItem as CartEntry } from "../../store/CartContext";
 import { QuantitySelector } from "../ui/QuantitySelector";
+import { Image } from "../ui/Image";
 
 /**
  * Presentational row for a single cart line item.
@@ -19,7 +20,7 @@ export function CartItem({ item }: { item: CartEntry }) {
   return (
     <div className="border-b py-4">
       <div className="flex items-start gap-3">
-        <img src={fragrance.image} alt={fragrance.name} className="h-20 w-16 object-cover" />
+        <Image src={fragrance.image} alt={fragrance.name} className="h-20 w-16 object-cover" />
         <div className="flex-1 space-y-2">
           <p className="text-sm site-heading">{fragrance.name}</p>
           <p className="text-xs uppercase tracking-[0.15em] text-muted">{item.size}</p>

@@ -11,7 +11,7 @@ export function CartPage() {
 
   return (
     <>
-      <SEOHead title="Cart | Alluring Scents" description="Review fragrance items in your cart and proceed to secure checkout." path="/cart" />
+      <SEOHead title="Cart | Alluring Scents" description="Review fragrance items in your cart and proceed to secure checkout." path="/cart" robots="noindex, nofollow" />
       <Section>
         <h1 className="mb-10 text-4xl site-heading md:text-5xl">Cart</h1>
         {items.length === 0 ? (

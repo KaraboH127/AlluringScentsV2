@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { SEOHead } from "../SEOHead";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { Section } from "../components/layout/Section";
+import { Image } from "../components/ui/Image";
 import { siteConfig } from "../config/site";
 import { journalArticles } from "../data/journalArticles";
 import { breadcrumbSchema } from "../utils/seo";
@@ -19,7 +20,7 @@ export function JournalPage() {
         ])}
       />
       <section className="relative min-h-[42vh] section-surface">
-        <img src={siteConfig.images.journal} alt="Journal editorial" className="absolute inset-0 h-full w-full object-cover opacity-12" />
+        <Image src={siteConfig.images.journal} alt="Journal editorial" className="absolute inset-0 h-full w-full object-cover opacity-12" />
         <div className="absolute inset-0" />
         <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <h1 className="text-5xl site-heading md:text-6xl">Journal</h1>

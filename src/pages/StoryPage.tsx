@@ -1,5 +1,6 @@
 import { SEOHead } from "../SEOHead";
 import { Section } from "../components/layout/Section";
+import { Image } from "../components/ui/Image";
 import { siteConfig } from "../config/site";
 import { breadcrumbSchema } from "../utils/seo";
 
@@ -16,7 +17,7 @@ export function StoryPage() {
         ])}
       />
       <section className="relative min-h-[60vh] section-surface">
-        <img src={siteConfig.images.founders} alt="Founders of Alluring Scents" className="absolute inset-0 h-full w-full object-cover opacity-12" />
+        <Image src={siteConfig.images.founders} alt="Founders of Alluring Scents" className="absolute inset-0 h-full w-full object-cover opacity-12" />
         <div className="absolute inset-0" />
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <p className="text-xs uppercase tracking-[0.24em] accent-gold">Our Story</p>
@@ -32,13 +33,13 @@ export function StoryPage() {
               Founded in 2024 by Thato Padi and Katlego Kennedy, Alluring Scents began as a conversation about fragrance, identity, and self-expression. What started as a shared obsession became a purpose-driven fragrance house.
             </p>
           </article>
-          <img src={siteConfig.images.lifestyle} alt="Alluring Scents lifestyle" className="h-80 w-full object-cover" />
+          <Image src={siteConfig.images.lifestyle} alt="Alluring Scents lifestyle" className="h-80 w-full object-cover" />
         </div>
       </Section>
 
       <Section className="border-y section-surface">
         <div className="grid gap-12 lg:grid-cols-2">
-          <img src={siteConfig.images.founders} alt="Thato Padi and Katlego Kennedy" className="h-80 w-full object-cover" />
+          <Image src={siteConfig.images.founders} alt="Thato Padi and Katlego Kennedy" className="h-80 w-full object-cover" />
           <article className="space-y-4">
             <h2 className="text-3xl site-heading">The Founders</h2>
             <p className="text-muted">

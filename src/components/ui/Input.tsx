@@ -8,6 +8,7 @@ export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
+      aria-label={props["aria-label"] ?? props.placeholder}
       className={cn(
         "h-11 w-full border bg-transparent px-3 text-sm outline-none placeholder:text-muted focus:border-gold",
         props.className,
