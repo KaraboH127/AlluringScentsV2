@@ -133,11 +133,11 @@ export function MobileDrawer({ open, onClose }: MobileDrawerProps) {
               ))}
             </nav>
 
-            <div className="border-t border-[#EAEAEA] px-6 py-5">
+            <div className="border-t border-[#EAEAEA] px-6 py-10">
               <Link
                 to="/collections"
                 onClick={onClose}
-                className="inline-flex w-full items-center justify-center border border-black bg-black px-4 py-3 text-xs uppercase tracking-[0.16em] text-white transition hover:border-[#C9A227] hover:bg-[#C9A227] hover:text-black"
+                className="inline-flex w-full items-center justify-center border border-black bg-black px-6 py-3 text-xs uppercase tracking-[0.16em] text-white transition hover:border-[#C9A227] hover:bg-[#C9A227] hover:text-black"
               >
                 Shop Collection
               </Link>
