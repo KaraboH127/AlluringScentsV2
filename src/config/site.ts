@@ -2,7 +2,7 @@ import type { Collection, Fragrance } from "../types/site";
 
 export const siteConfig = {
   brand: "Alluring Scents",
-  domain: "https://alluringscents.co.za",
+  domain: "https://alluring-scents-v2.vercel.app",
   foundedYear: 2024,
   founders: ["Thato Padi", "Katlego Kennedy"],
   keywords: [

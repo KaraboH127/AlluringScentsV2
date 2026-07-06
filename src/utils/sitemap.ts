@@ -1,7 +1,7 @@
 import { fragrances } from "../config/site";
 import { journalArticles } from "../data/journalArticles";
 
-const base = "https://alluringscents.co.za";
+const base = "https://alluring-scents-v2.vercel.app/";
 
 const staticRoutes = ["/", "/our-story", "/collections", "/pricing", "/journal", "/cart", "/checkout", "/success"];
 
