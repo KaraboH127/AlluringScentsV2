@@ -4,7 +4,7 @@ import path from 'path';
 // Simple sitemap generator that parses site slugs from source files.
 // Works without TypeScript compilation by extracting slug strings via regex.
 
-const base = 'https://alluringscents.co.za';
+const base = 'https://alluring-scents-v2.vercel.app/';
 const out = path.resolve(process.cwd(), 'public', 'sitemap.xml');
 
 function extractSlugsFromFile(filePath, keyName = 'slug') {

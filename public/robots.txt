@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://alluringscents.co.za/sitemap.xml
+Sitemap: https://alluring-scents-v2.vercel.app/sitemap.xml
 
 # Crawl-delay can be added for low-tier hosting, but avoid unless necessary
 # Crawl-delay: 10
