@@ -1,7 +1,9 @@
 import { Link, useParams } from "react-router-dom";
 import { SEOHead } from "../SEOHead";
+import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { Section } from "../components/layout/Section";
 import { journalArticles } from "../data/journalArticles";
+import { breadcrumbSchema } from "../utils/seo";
 
 export function JournalArticlePage() {
   const { slug = "" } = useParams();
@@ -30,10 +32,22 @@ export function JournalArticlePage() {
           datePublished: article.publishedAt,
           author: { "@type": "Organization", name: "Alluring Scents" },
           keywords: article.keywords.join(", "),
+          breadcrumb: breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Journal", path: "/journal" },
+            { name: article.title, path: `/journal/${article.slug}` },
+          ]),
         }}
       />
 
       <Section>
+        <Breadcrumb
+          items={[
+            { name: "Home", path: "/" },
+            { name: "Journal", path: "/journal" },
+            { name: article.title, path: `/journal/${article.slug}` },
+          ]}
+        />
         <article className="mx-auto max-w-3xl space-y-8">
           <header className="space-y-4 border-b border-[#222] pb-6">
             <p className="text-xs uppercase tracking-[0.14em] text-[#C9A227]">{article.readingMinutes} min read</p>
