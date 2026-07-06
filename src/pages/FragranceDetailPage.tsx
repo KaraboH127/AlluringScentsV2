@@ -7,7 +7,7 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { QuantitySelector } from "../components/ui/QuantitySelector";
 import { Select } from "../components/ui/Select";
-import { collections, formatCurrency, getFragranceBySlug } from "../config/site";
+import { collections, formatCurrency, getFragranceBySlug, siteConfig } from "../config/site";
 import { useCart } from "../store/CartContext";
 import type { SizeOption } from "../types/site";
 
