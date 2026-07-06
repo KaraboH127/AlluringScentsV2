@@ -25,13 +25,13 @@ export const siteConfig = {
     { label: "Journal", path: "/journal" },
   ],
   images: {
-    logo: "/Alluring_scents_logo.jpg",
-    hero: "/Alluring_scents_logo.jpg",
-    founders: "/founders-placeholder.jpg",
-    bottle: "/bottle-placeholder.jpg",
-    lifestyle: "/lifestyle-placeholder.jpg",
-    collection: "/Alluring_scents_logo.jpg",
-    journal: "/journal-placeholder.jpg",
+    logo: "/Alluring_scents_logo.webp",
+    hero: "/Alluring_scents_logo.webp",
+    founders: "/founders-placeholder.webp",
+    bottle: "/bottle-placeholder.webp",
+    lifestyle: "/lifestyle-placeholder.webp",
+    collection: "/Alluring_scents_logo.webp",
+    journal: "/journal-placeholder.webp",
   },
 };
 
@@ -83,7 +83,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Daily elegance",
     occasions: ["Workdays", "Brunch", "Evening transitions"],
     personality: "Refined, calm, effortlessly confident",
-    image: "/image10.png",
+    image: "/image10.webp",
   },
   {
     id: "whiskey-sour",
@@ -100,7 +100,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Bold evenings",
     occasions: ["Dinner dates", "Lounges", "Night events"],
     personality: "Magnetic, adventurous, polished",
-    image: "/image9.png",
+    image: "/image9.webp",
   },
   {
     id: "velvet-nectar",
@@ -117,7 +117,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Signature wear",
     occasions: ["Celebrations", "Day-to-night wear", "Special meetings"],
     personality: "Elegant, expressive, poised",
-    image: "/image5.png",
+    image: "/image5.webp",
   },
   {
     id: "midnight-oud",
@@ -134,7 +134,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "After-dark presence",
     occasions: ["Formal events", "Winter evenings", "Statement moments"],
     personality: "Commanding, luxurious, deep",
-    image: "/image6.png",
+    image: "/image6.webp",
   },
   {
     id: "purple-rain",
@@ -151,7 +151,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Fresh confidence",
     occasions: ["Day events", "Creative work", "Weekend outings"],
     personality: "Modern, romantic, expressive",
-    image: "/image3.png",
+    image: "/image3.webp",
   },
   {
     id: "taboo",
@@ -168,7 +168,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Evening attraction",
     occasions: ["Date nights", "Cocktail evenings", "Luxury occasions"],
     personality: "Fearless, alluring, unforgettable",
-    image: "/image2.png",
+    image: "/image2.webp",
   },
   {
     id: "ocean-eyes",
@@ -185,7 +185,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Clean versatility",
     occasions: ["Warm days", "Travel", "Office wear"],
     personality: "Fresh, focused, relaxed",
-    image: "/image1.png",
+    image: "/image1.webp",
   },
   {
     id: "fresh",
@@ -202,7 +202,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Everyday ease",
     occasions: ["Morning routines", "Gym-to-day transitions", "Hot weather"],
     personality: "Minimal, energetic, sharp",
-    image: "/image0.png",
+    image: "/image0.webp",
   },
   {
     id: "9-lives",
@@ -219,7 +219,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Statement identity",
     occasions: ["High-impact meetings", "Events", "Nightlife"],
     personality: "Bold, charismatic, uncompromising",
-    image: "/image12.png",
+    image: "/image12.webp",
   },
   {
     id: "golden-amber",
@@ -236,7 +236,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Luxury evenings",
     occasions: ["Formal dinners", "Celebratory nights", "Cool seasons"],
     personality: "Confident, warm, regal",
-    image: "/image11.png",
+    image: "/image11.webp",
   },
   {
     id: "island-water",
@@ -253,7 +253,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Luxurious freshness",
     occasions: ["Resort wear", "Summer evenings", "Holiday escapes"],
     personality: "Relaxed, premium, luminous",
-    image: "/image7.png",
+    image: "/image7.webp",
   },
   {
     id: "signature",
@@ -270,7 +270,7 @@ export const fragrances: Fragrance[] = [
     bestFor: "Defining moments",
     occasions: ["Daily signature wear", "Business", "Elegant evenings"],
     personality: "Timeless, assured, sophisticated",
-    image: "/image4.png",
+    image: "/image4.webp",
   },
 ];
 
