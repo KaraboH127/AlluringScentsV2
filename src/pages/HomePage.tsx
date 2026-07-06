@@ -93,20 +93,29 @@ export function HomePage() {
       </Section>
 
       <Section className="border-y section-surface">
-        <h2 className="mb-8 text-3xl site-heading md:text-4xl">Why Choose Alluring Scents</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {homeWhyChoose.map((item) => (
-            <p key={item} className="border px-4 py-6 text-sm text-muted">
-              {item}
-            </p>
-          ))}
+        <div className="mx-auto max-w-6xl space-y-8">
+          <div className="max-w-3xl space-y-3">
+            <p className="text-xs uppercase tracking-[0.24em] accent-gold">Why choose Alluring Scents</p>
+            <h2 className="text-3xl site-heading md:text-4xl">A fragrance house designed for presence, longevity, and personal expression.</h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {homeWhyChoose.map((item) => (
+              <div key={item} className="border border-white/40 bg-white/30 p-5 shadow-sm shadow-black/10 backdrop-blur-xl backdrop-saturate-150">
+                <p className="text-sm text-muted">{item}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </Section>
 
       <Section>
-        <div className="space-y-5 border p-8 text-center">
-          <h2 className="text-3xl site-heading md:text-4xl">Luxury begins with your signature scent.</h2>
-          <Link to="/collections" className="inline-block">
+        <div className="mx-auto max-w-5xl border border-white/40 bg-white/30 p-8 text-center shadow-lg shadow-black/10 backdrop-blur-xl backdrop-saturate-150 sm:p-10">
+          <p className="text-xs uppercase tracking-[0.24em] accent-gold">Begin your signature</p>
+          <h2 className="mt-4 text-3xl site-heading md:text-4xl">Luxury begins with your signature scent.</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted">
+            Discover the collection and find the fragrance that fits your rhythm, your style, and the impression you want to leave.
+          </p>
+          <Link to="/collections" className="mt-6 inline-block">
             <Button>Shop Collection</Button>
           </Link>
         </div>
