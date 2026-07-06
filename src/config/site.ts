@@ -25,12 +25,12 @@ export const siteConfig = {
     { label: "Journal", path: "/journal" },
   ],
   images: {
-    logo: "/logo-placeholder.svg",
-    hero: "/hero-placeholder.jpg",
+    logo: "/Alluring_scents_logo.jpg",
+    hero: "/Alluring_scents_logo.jpg",
     founders: "/founders-placeholder.jpg",
     bottle: "/bottle-placeholder.jpg",
     lifestyle: "/lifestyle-placeholder.jpg",
-    collection: "/collection-placeholder.jpg",
+    collection: "/Alluring_scents_logo.jpg",
     journal: "/journal-placeholder.jpg",
   },
 };
