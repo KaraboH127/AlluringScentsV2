@@ -15,6 +15,7 @@ interface CartContextValue {
   isDrawerOpen: boolean;
   itemCount: number;
   subtotal: number;
+  getTotalPrice: () => number;
   toggleDrawer: (open?: boolean) => void;
   addToCart: (fragranceId: string, size: SizeOption, quantity: number) => void;
   removeFromCart: (fragranceId: string, size: SizeOption) => void;
@@ -46,6 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       isDrawerOpen,
       itemCount: items.reduce((acc, item) => acc + item.quantity, 0),
       subtotal,
+      getTotalPrice: () => subtotal,
       toggleDrawer: (open?: boolean) => setDrawerOpen((previous) => open ?? !previous),
       addToCart: (fragranceId, size, quantity) => {
         setItems((current) => {
