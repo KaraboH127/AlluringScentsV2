@@ -63,12 +63,27 @@ app.post("/create-checkout", async (req, res) => {
 
 // ─── Yoco Webhook ─────────────────────────────────────────────────────────────
 
+const crypto = require("crypto");
+
 app.post("/webhook", (req, res) => {
   const secret = process.env.YOCO_WEBHOOK_SECRET;
   const signature = req.headers["webhook-signature"];
 
-  if (!signature || signature !== secret) {
-    console.warn("Webhook rejected — invalid signature.");
+  if (!signature) {
+    console.warn("Webhook rejected — no signature header.");
+    return res.status(401).json({ error: "Unauthorized." });
+  }
+
+  // Yoco signs the raw body with HMAC-SHA256
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(req.body)
+    .digest("hex");
+
+  if (signature !== expectedSignature) {
+    console.warn("Webhook rejected — signature mismatch.");
+    console.warn("Received:", signature);
+    console.warn("Expected:", expectedSignature);
     return res.status(401).json({ error: "Unauthorized." });
   }
 
@@ -84,11 +99,11 @@ app.post("/webhook", (req, res) => {
   if (event.type === "payment.succeeded") {
     const { metadata, amountInCents } = event.payload;
     console.log("✅ Payment succeeded:", { metadata, amountInCents });
-    // 👉 This is where you'd save the order to a database later
   }
 
   res.json({ received: true });
 });
+
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
 
