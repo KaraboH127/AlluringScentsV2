@@ -74,15 +74,20 @@ app.post("/webhook", (req, res) => {
     return res.status(401).json({ error: "Unauthorized." });
   }
 
+    // Strip the "v1," prefix Yoco sends
+    const rawSignature = signature.startsWith("v1,")
+    ? signature.slice(3)
+    : signature;
+
   // Yoco signs the raw body with HMAC-SHA256
   const expectedSignature = crypto
     .createHmac("sha256", secret)
     .update(req.body)
-    .digest("hex");
+    .digest("base64");
 
-  if (signature !== expectedSignature) {
+  if (rawSignature !== expectedSignature) {
     console.warn("Webhook rejected — signature mismatch.");
-    console.warn("Received:", signature);
+    console.warn("Received:", rawSignature);
     console.warn("Expected:", expectedSignature);
     return res.status(401).json({ error: "Unauthorized." });
   }
