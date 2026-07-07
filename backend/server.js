@@ -306,6 +306,23 @@ app.get("/order/:orderId", async (req, res) => {
   res.json(data);
 });
 
+// ─── Public Stock Check ───────────────────────────────────────────────────────
+
+app.get("/stock/:fragranceId", async (req, res) => {
+  const { fragranceId } = req.params;
+
+  const { data, error } = await supabase
+    .from("inventory")
+    .select("size, stock")
+    .eq("fragrance_id", fragranceId);
+
+  if (error) {
+    return res.status(500).json({ error: "Failed to fetch stock." });
+  }
+
+  res.json(data);
+});
+
 // ─── Admin — Login ────────────────────────────────────────────────────────────
 
 app.post("/admin/login", async (req, res) => {

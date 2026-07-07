@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { SEOHead } from "../SEOHead";
 import { FragranceHero } from "../components/fragrance/FragranceHero";
@@ -11,12 +11,38 @@ import { collections, formatCurrency, getFragranceBySlug, siteConfig } from "../
 import { useCart } from "../store/CartContext";
 import type { SizeOption } from "../types/site";
 
+const API = import.meta.env.VITE_API_URL;
+
 export function FragranceDetailPage() {
   const { slug = "" } = useParams();
   const fragrance = useMemo(() => getFragranceBySlug(slug), [slug]);
   const [size, setSize] = useState<SizeOption>("50ml");
   const [quantity, setQuantity] = useState(1);
+  const [stock, setStock] = useState<Record<string, number>>({});
+  const [stockLoading, setStockLoading] = useState(true);
+  const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
+
+  // ── Fetch stock for this fragrance ─────────────────────────────────────────
+
+  useEffect(() => {
+    if (!fragrance) return;
+    setStockLoading(true);
+    fetch(`${API}/stock/${fragrance.id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        // data is an array of { size, stock }
+        const map: Record<string, number> = {};
+        if (Array.isArray(data)) {
+          data.forEach((row: { size: string; stock: number }) => {
+            map[row.size] = row.stock;
+          });
+        }
+        setStock(map);
+        setStockLoading(false);
+      })
+      .catch(() => setStockLoading(false));
+  }, [fragrance?.id]);
 
   if (!fragrance) {
     return (
@@ -27,6 +53,16 @@ export function FragranceDetailPage() {
   }
 
   const collection = collections.find((entry) => entry.id === fragrance.collection)!;
+  const currentStock = stock[size] ?? 0;
+  const isOutOfStock = !stockLoading && currentStock === 0;
+  const isLowStock = !stockLoading && currentStock > 0 && currentStock <= 5;
+
+  const handleAddToCart = () => {
+    if (isOutOfStock) return;
+    addToCart(fragrance.id, size, quantity);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
 
   return (
     <>
@@ -66,32 +102,73 @@ export function FragranceDetailPage() {
               <span className="accent-gold">Best For:</span> {fragrance.bestFor}
             </p>
             <p>
-              <span className="accent-gold">Suggested Occasions:</span> {fragrance.occasions.join(", ")}
+              <span className="accent-gold">Suggested Occasions:</span>{" "}
+              {fragrance.occasions.join(", ")}
             </p>
             <p>
               <span className="accent-gold">Suggested Personality:</span> {fragrance.personality}
             </p>
             <p>
-              Available Sizes: 10ml ({formatCurrency(collection.prices["10ml"])}), 50ml ({formatCurrency(collection.prices["50ml"])}), 100ml ({formatCurrency(collection.prices["100ml"])})
+              Available Sizes: 10ml ({formatCurrency(collection.prices["10ml"])}), 50ml (
+              {formatCurrency(collection.prices["50ml"])}), 100ml (
+              {formatCurrency(collection.prices["100ml"])})
             </p>
           </div>
 
           <div className="space-y-4 border p-6">
             <label className="block space-y-2 text-xs uppercase tracking-[0.14em] text-muted">
               Size Selector
-              <Select value={size} onChange={(event) => setSize(event.target.value as SizeOption)}>
-                <option value="10ml">10ml - {formatCurrency(collection.prices["10ml"])}</option>
-                <option value="50ml">50ml - {formatCurrency(collection.prices["50ml"])}</option>
-                <option value="100ml">100ml - {formatCurrency(collection.prices["100ml"])}</option>
+              <Select
+                value={size}
+                onChange={(event) => {
+                  setSize(event.target.value as SizeOption);
+                  setAdded(false);
+                }}
+              >
+                <option value="10ml">10ml — {formatCurrency(collection.prices["10ml"])}</option>
+                <option value="50ml">50ml — {formatCurrency(collection.prices["50ml"])}</option>
+                <option value="100ml">100ml — {formatCurrency(collection.prices["100ml"])}</option>
               </Select>
             </label>
+
+            {/* Stock status */}
+            {!stockLoading && (
+              <p className={`text-xs tracking-wide ${
+                isOutOfStock ? "text-red-400" :
+                isLowStock   ? "text-yellow-400" :
+                               "text-green-500"
+              }`}>
+                {isOutOfStock
+                  ? "Out of stock for this size"
+                  : isLowStock
+                  ? `Only ${currentStock} left`
+                  : "In stock"}
+              </p>
+            )}
+
             <div className="space-y-2">
               <p className="text-xs uppercase tracking-[0.14em] text-muted">Quantity Selector</p>
-              <QuantitySelector value={quantity} onChange={setQuantity} />
+              <QuantitySelector
+                value={quantity}
+                onChange={setQuantity}
+                max={isOutOfStock ? 0 : currentStock}
+              />
             </div>
-            <Button onClick={() => addToCart(fragrance.id, size, quantity)} className="w-full">
-              Add To Cart
+
+            <Button
+              onClick={handleAddToCart}
+              className="w-full"
+              disabled={isOutOfStock || stockLoading}
+            >
+              {stockLoading
+                ? "Checking stock..."
+                : isOutOfStock
+                ? "Out of Stock"
+                : added
+                ? "Added ✓"
+                : "Add To Cart"}
             </Button>
+
             <Link to="/collections">
               <Button variant="ghost" className="w-full">
                 Continue Shopping
