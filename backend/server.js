@@ -1,4 +1,5 @@
 require("dotenv").config();
+const crypto = require("crypto");
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -7,7 +8,6 @@ const app = express();
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
-// Raw body parser MUST come before json — needed for webhook signature verification
 app.use(
   "/webhook",
   express.raw({ type: "application/json" })
@@ -63,8 +63,6 @@ app.post("/create-checkout", async (req, res) => {
 
 // ─── Yoco Webhook ─────────────────────────────────────────────────────────────
 
-const crypto = require("crypto");
-
 app.post("/webhook", (req, res) => {
   const secret = process.env.YOCO_WEBHOOK_SECRET;
   const signature = req.headers["webhook-signature"];
@@ -74,14 +72,16 @@ app.post("/webhook", (req, res) => {
     return res.status(401).json({ error: "Unauthorized." });
   }
 
-    // Strip the "v1," prefix Yoco sends
-    const rawSignature = signature.startsWith("v1,")
+  // Strip the "v1," prefix Yoco sends
+  const rawSignature = signature.startsWith("v1,")
     ? signature.slice(3)
     : signature;
 
-  // Yoco signs the raw body with HMAC-SHA256
+  // Decode the base64 secret before using it as the HMAC key
+  const secretBuffer = Buffer.from(secret, "base64");
+
   const expectedSignature = crypto
-    .createHmac("sha256", secret)
+    .createHmac("sha256", secretBuffer)
     .update(req.body)
     .digest("base64");
 
@@ -108,7 +108,6 @@ app.post("/webhook", (req, res) => {
 
   res.json({ received: true });
 });
-
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
 
