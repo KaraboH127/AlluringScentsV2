@@ -3,15 +3,20 @@ const crypto = require("crypto");
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
 
+// ─── Supabase ─────────────────────────────────────────────────────────────────
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
-app.use(
-  "/webhook",
-  express.raw({ type: "application/json" })
-);
+app.use("/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(
   cors({
@@ -63,7 +68,7 @@ app.post("/create-checkout", async (req, res) => {
 
 // ─── Yoco Webhook ─────────────────────────────────────────────────────────────
 
-app.post("/webhook", (req, res) => {
+app.post("/webhook", async (req, res) => {
   const secret = process.env.YOCO_WEBHOOK_SECRET;
   const signature = req.headers["webhook-signature"];
   const webhookId = req.headers["webhook-id"];
@@ -74,10 +79,7 @@ app.post("/webhook", (req, res) => {
     return res.status(401).json({ error: "Unauthorized." });
   }
 
-  // Build the signed content exactly as Yoco does
   const signedContent = `${webhookId}.${webhookTimestamp}.${req.body.toString()}`;
-
-  // Strip "whsec_" prefix and decode from base64
   const secretBuffer = Buffer.from(secret.replace("whsec_", ""), "base64");
 
   const expectedSignature = crypto
@@ -91,8 +93,6 @@ app.post("/webhook", (req, res) => {
 
   if (rawSignature !== expectedSignature) {
     console.warn("Webhook rejected — signature mismatch.");
-    console.warn("Received:", rawSignature);
-    console.warn("Expected:", expectedSignature);
     return res.status(401).json({ error: "Unauthorized." });
   }
 
@@ -105,12 +105,49 @@ app.post("/webhook", (req, res) => {
 
   console.log("Webhook received:", event.type);
 
-      if (event.type === "payment.succeeded") {
-      const { metadata, amount } = event.payload;
-      console.log("✅ Payment succeeded:", { metadata, amountInCents: amount });
+  if (event.type === "payment.succeeded") {
+    const { metadata, amount } = event.payload;
+
+    const { error } = await supabase.from("orders").insert({
+      order_id: metadata.orderId,
+      first_name: metadata.firstName,
+      last_name: metadata.lastName,
+      email: metadata.email,
+      phone: metadata.phone,
+      address: metadata.address,
+      city: metadata.city,
+      province: metadata.province,
+      postal_code: metadata.postalCode,
+      amount_in_cents: amount,
+      checkout_id: metadata.checkoutId,
+    });
+
+    if (error) {
+      console.error("❌ Failed to save order:", error.message);
+    } else {
+      console.log("✅ Order saved:", metadata.orderId);
     }
+  }
 
   res.json({ received: true });
+});
+
+// ─── Get Order ────────────────────────────────────────────────────────────────
+
+app.get("/order/:orderId", async (req, res) => {
+  const { orderId } = req.params;
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("order_id", orderId)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ error: "Order not found." });
+  }
+
+  res.json(data);
 });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
