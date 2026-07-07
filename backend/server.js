@@ -67,31 +67,43 @@ app.post("/webhook", (req, res) => {
   const secret = process.env.YOCO_WEBHOOK_SECRET;
   const signature = req.headers["webhook-signature"];
 
-  console.log("=== WEBHOOK DEBUG ===");
-  console.log("Raw secret from env:", secret);
-  console.log("Signature header:", signature);
-  console.log("Body type:", typeof req.body);
-  console.log("Body is Buffer:", Buffer.isBuffer(req.body));
-  console.log("Body toString:", req.body.toString());
+  if (!signature) {
+    console.warn("Webhook rejected — no signature header.");
+    return res.status(401).json({ error: "Unauthorized." });
+  }
 
-  // Try all combinations
-  const rawSignature = signature.startsWith("v1,") ? signature.slice(3) : signature;
+  const rawSignature = signature.startsWith("v1,")
+    ? signature.slice(3)
+    : signature;
 
-  const attempt1 = crypto.createHmac("sha256", secret).update(req.body).digest("base64");
-  const attempt2 = crypto.createHmac("sha256", secret).update(req.body).digest("hex");
-  const attempt3 = crypto.createHmac("sha256", Buffer.from(secret, "base64")).update(req.body).digest("base64");
-  const attempt4 = crypto.createHmac("sha256", Buffer.from(secret, "base64")).update(req.body).digest("hex");
+  // Strip "whsec_" prefix then decode from base64
+  const secretBuffer = Buffer.from(secret.replace("whsec_", ""), "base64");
 
-  console.log("Raw signature:", rawSignature);
-  console.log("Attempt 1 (secret as-is, base64):", attempt1);
-  console.log("Attempt 2 (secret as-is, hex):", attempt2);
-  console.log("Attempt 3 (secret decoded, base64):", attempt3);
-  console.log("Attempt 4 (secret decoded, hex):", attempt4);
-  console.log("Match 1:", rawSignature === attempt1);
-  console.log("Match 2:", rawSignature === attempt2);
-  console.log("Match 3:", rawSignature === attempt3);
-  console.log("Match 4:", rawSignature === attempt4);
-  console.log("=== END DEBUG ===");
+  const expectedSignature = crypto
+    .createHmac("sha256", secretBuffer)
+    .update(req.body)
+    .digest("base64");
+
+  if (rawSignature !== expectedSignature) {
+    console.warn("Webhook rejected — signature mismatch.");
+    console.warn("Received:", rawSignature);
+    console.warn("Expected:", expectedSignature);
+    return res.status(401).json({ error: "Unauthorized." });
+  }
+
+  let event;
+  try {
+    event = JSON.parse(req.body.toString());
+  } catch {
+    return res.status(400).json({ error: "Invalid JSON." });
+  }
+
+  console.log("Webhook received:", event.type);
+
+  if (event.type === "payment.succeeded") {
+    const { metadata, amountInCents } = event.payload;
+    console.log("✅ Payment succeeded:", { metadata, amountInCents });
+  }
 
   res.json({ received: true });
 });
