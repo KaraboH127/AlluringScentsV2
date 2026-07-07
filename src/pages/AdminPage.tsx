@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -57,20 +57,24 @@ const statusColor: Record<string, string> = {
   shipped:   "bg-green-500/10 text-green-400 border border-green-500/20",
 };
 
+const ALL = "all";
+
 // ─── Admin Page ───────────────────────────────────────────────────────────────
 
 export function AdminPage() {
-  const [token, setToken]               = useState(() => sessionStorage.getItem("admin_token") ?? "");
-  const [password, setPassword]         = useState("");
-  const [loginError, setLoginError]     = useState("");
-  const [tab, setTab]                   = useState<"orders" | "inventory">("orders");
-  const [orders, setOrders]             = useState<Order[]>([]);
-  const [inventory, setInventory]       = useState<InventoryItem[]>([]);
-  const [stats, setStats]               = useState<Stats | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [editStock, setEditStock]       = useState<Record<string, number>>({});
-  const [saving, setSaving]             = useState<string | null>(null);
-  const [loading, setLoading]           = useState(false);
+  const [token, setToken]                   = useState(() => sessionStorage.getItem("admin_token") ?? "");
+  const [password, setPassword]             = useState("");
+  const [loginError, setLoginError]         = useState("");
+  const [tab, setTab]                       = useState<"orders" | "inventory">("orders");
+  const [orders, setOrders]                 = useState<Order[]>([]);
+  const [inventory, setInventory]           = useState<InventoryItem[]>([]);
+  const [stats, setStats]                   = useState<Stats | null>(null);
+  const [selectedOrder, setSelectedOrder]   = useState<Order | null>(null);
+  const [editStock, setEditStock]           = useState<Record<string, number>>({});
+  const [saving, setSaving]                 = useState<string | null>(null);
+  const [loading, setLoading]               = useState(false);
+  const [search, setSearch]                 = useState("");
+  const [statusFilter, setStatusFilter]     = useState(ALL);
 
   const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
@@ -108,6 +112,23 @@ export function AdminPage() {
       setLoading(false);
     });
   }, [token]);
+
+  // ── Filtered orders ────────────────────────────────────────────────────────
+
+  const filteredOrders = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return orders.filter((o) => {
+      const matchesStatus = statusFilter === ALL || o.status === statusFilter;
+      const matchesSearch =
+        !q ||
+        o.order_id.toLowerCase().includes(q) ||
+        o.first_name.toLowerCase().includes(q) ||
+        o.last_name.toLowerCase().includes(q) ||
+        o.email.toLowerCase().includes(q) ||
+        o.phone.includes(q);
+      return matchesStatus && matchesSearch;
+    });
+  }, [orders, search, statusFilter]);
 
   // ── Update order status ────────────────────────────────────────────────────
 
@@ -188,8 +209,6 @@ export function AdminPage() {
         </div>
 
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-
-          {/* Order ID */}
           <div>
             <p className="text-xs text-[#666] tracking-widest uppercase mb-1">Order Reference</p>
             <p className="text-2xl text-[#c9a84c] tracking-widest">{selectedOrder.order_id}</p>
@@ -198,7 +217,6 @@ export function AdminPage() {
             </p>
           </div>
 
-          {/* Customer + Address */}
           <div className="border border-[#1a1a1a] p-4 grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
             <div className="space-y-1">
               <p className="text-[#666] text-xs uppercase tracking-widest mb-2">Customer</p>
@@ -214,7 +232,6 @@ export function AdminPage() {
             </div>
           </div>
 
-          {/* Items ordered */}
           <div className="border border-[#1a1a1a] p-4 space-y-4">
             <p className="text-xs text-[#666] uppercase tracking-widest">Items Ordered</p>
             {items.length === 0 ? (
@@ -223,11 +240,7 @@ export function AdminPage() {
               <div className="space-y-3">
                 {items.map((item, i) => (
                   <div key={i} className="flex items-center gap-4 py-3 border-b border-[#1a1a1a] last:border-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-14 h-14 object-cover rounded flex-shrink-0"
-                    />
+                    <img src={item.image} alt={item.name} className="w-14 h-14 object-cover rounded flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white font-medium">{item.name}</p>
                       <p className="text-xs text-[#888] mt-0.5">{item.size}</p>
@@ -240,16 +253,12 @@ export function AdminPage() {
                 ))}
               </div>
             )}
-
-            {/* Totals */}
             <div className="pt-2 space-y-2 text-sm border-t border-[#1a1a1a]">
               <div className="flex justify-between text-[#888]">
-                <span>Subtotal</span>
-                <span>{fmt(subtotal)}</span>
+                <span>Subtotal</span><span>{fmt(subtotal)}</span>
               </div>
               <div className="flex justify-between text-[#888]">
-                <span>Delivery</span>
-                <span>{fmt(delivery)}</span>
+                <span>Delivery</span><span>{fmt(delivery)}</span>
               </div>
               <div className="flex justify-between text-white font-medium pt-1 border-t border-[#1a1a1a]">
                 <span>Total</span>
@@ -258,7 +267,6 @@ export function AdminPage() {
             </div>
           </div>
 
-          {/* Update status */}
           <div className="border border-[#1a1a1a] p-4 space-y-3">
             <p className="text-xs text-[#666] uppercase tracking-widest">Update Status</p>
             <div className="grid grid-cols-3 gap-2">
@@ -277,7 +285,6 @@ export function AdminPage() {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     );
@@ -363,32 +370,76 @@ export function AdminPage() {
 
           {/* Orders tab */}
           {tab === "orders" && (
-            <div className="space-y-2">
-              {orders.length === 0 && (
-                <p className="text-[#666] text-sm">No orders yet.</p>
-              )}
-              {orders.map((order) => (
-                <div
-                  key={order.id}
-                  onClick={() => setSelectedOrder(order)}
-                  className="border border-[#1a1a1a] p-4 flex items-center justify-between cursor-pointer hover:border-[#c9a84c]/30 transition-colors gap-4"
-                >
-                  <div className="space-y-1 min-w-0">
-                    <p className="text-sm text-[#c9a84c] tracking-widest">{order.order_id}</p>
-                    <p className="text-sm truncate">{order.first_name} {order.last_name}</p>
-                    <p className="text-xs text-[#666] truncate hidden sm:block">{order.email}</p>
-                  </div>
-                  <div className="text-right space-y-1 flex-shrink-0">
-                    <p className="text-sm">{fmt(order.amount_in_cents)}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full inline-block ${statusColor[order.status]}`}>
-                      {order.status}
-                    </span>
-                    <p className="text-xs text-[#555]">
-                      {new Date(order.created_at).toLocaleDateString("en-ZA")}
-                    </p>
-                  </div>
+            <div className="space-y-4">
+
+              {/* Search + Filter */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  placeholder="Search by name, email, order ID, phone..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="flex-1 bg-[#111] border border-[#222] text-white px-4 py-2.5 text-sm outline-none focus:border-[#c9a84c] transition-colors placeholder:text-[#444]"
+                />
+                <div className="flex gap-2 flex-wrap">
+                  {[ALL, "succeeded", "fulfilled", "shipped"].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setStatusFilter(s)}
+                      className={`px-4 py-2 text-xs uppercase tracking-widest border transition-colors whitespace-nowrap ${
+                        statusFilter === s
+                          ? "bg-[#c9a84c] text-black border-[#c9a84c]"
+                          : "border-[#333] text-[#666] hover:border-[#c9a84c] hover:text-[#c9a84c]"
+                      }`}
+                    >
+                      {s === ALL ? "All" : s}
+                    </button>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Results count */}
+              <p className="text-xs text-[#555]">
+                {filteredOrders.length} {filteredOrders.length === 1 ? "order" : "orders"}
+                {statusFilter !== ALL && ` · ${statusFilter}`}
+                {search && ` · "${search}"`}
+              </p>
+
+              {/* Order list */}
+              {filteredOrders.length === 0 ? (
+                <div className="border border-[#1a1a1a] p-8 text-center">
+                  <p className="text-[#666] text-sm">No orders match your search.</p>
+                  <button
+                    onClick={() => { setSearch(""); setStatusFilter(ALL); }}
+                    className="mt-3 text-xs text-[#c9a84c] hover:text-white transition-colors"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              ) : (
+                filteredOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    onClick={() => setSelectedOrder(order)}
+                    className="border border-[#1a1a1a] p-4 flex items-center justify-between cursor-pointer hover:border-[#c9a84c]/30 transition-colors gap-4"
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <p className="text-sm text-[#c9a84c] tracking-widest">{order.order_id}</p>
+                      <p className="text-sm truncate">{order.first_name} {order.last_name}</p>
+                      <p className="text-xs text-[#666] truncate hidden sm:block">{order.email}</p>
+                    </div>
+                    <div className="text-right space-y-1 flex-shrink-0">
+                      <p className="text-sm">{fmt(order.amount_in_cents)}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full inline-block ${statusColor[order.status]}`}>
+                        {order.status}
+                      </span>
+                      <p className="text-xs text-[#555]">
+                        {new Date(order.created_at).toLocaleDateString("en-ZA")}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
 
