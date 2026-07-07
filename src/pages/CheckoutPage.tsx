@@ -5,9 +5,10 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { useCart } from "../store/CartContext";
+import { fragrances } from "../config/site";
 
 export function CheckoutPage() {
-  const { items, subtotal } = useCart();
+  const { items, subtotal, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,6 +23,17 @@ export function CheckoutPage() {
     const form = event.currentTarget;
     const orderId = `AS-${Date.now().toString().slice(-6)}`;
 
+    // Build enriched items for the email
+    const orderItems = items.map((item) => {
+      const fragrance = fragrances.find((f) => f.id === item.fragranceId);
+      return {
+        name: fragrance?.name ?? item.fragranceId,
+        size: item.size,
+        quantity: item.quantity,
+        image: `https://alluring-scents-v2.vercel.app${fragrance?.image ?? ""}`,
+      };
+    });
+
     const metadata = {
       orderId,
       firstName: (form.elements.namedItem("firstName") as HTMLInputElement).value,
@@ -32,6 +44,8 @@ export function CheckoutPage() {
       city: (form.elements.namedItem("city") as HTMLInputElement).value,
       province: (form.elements.namedItem("province") as HTMLInputElement).value,
       postalCode: (form.elements.namedItem("postalCode") as HTMLInputElement).value,
+      items: JSON.stringify(orderItems),
+      deliveryInCents: String(delivery * 100),
     };
 
     try {
