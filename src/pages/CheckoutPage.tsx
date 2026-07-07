@@ -7,8 +7,10 @@ import { Input } from "../components/ui/Input";
 import { useCart } from "../store/CartContext";
 import { fragrances } from "../config/site";
 
+const API = import.meta.env.VITE_API_URL;
+
 export function CheckoutPage() {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,10 +22,50 @@ export function CheckoutPage() {
     setLoading(true);
     setError(null);
 
+    // ── Stock validation ────────────────────────────────────────────────────
+    try {
+      const stockChecks = await Promise.all(
+        items.map((item) =>
+          fetch(`${API}/stock/${item.fragranceId}`)
+            .then((r) => r.json())
+            .then((data) => {
+              const row = Array.isArray(data)
+                ? data.find((r: { size: string; stock: number }) => r.size === item.size)
+                : null;
+              return {
+                fragranceId: item.fragranceId,
+                size: item.size,
+                quantity: item.quantity,
+                available: row?.stock ?? 0,
+              };
+            })
+        )
+      );
+
+      const outOfStock = stockChecks.filter((s) => s.available === 0);
+      const exceeds    = stockChecks.filter((s) => s.available > 0 && s.quantity > s.available);
+
+      if (outOfStock.length > 0) {
+        setError("Some items in your cart are out of stock. Please review your cart before continuing.");
+        setLoading(false);
+        return;
+      }
+
+      if (exceeds.length > 0) {
+        setError("Some item quantities exceed available stock. Please review your cart before continuing.");
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setError("Could not verify stock. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    // ── Build order ─────────────────────────────────────────────────────────
     const form = event.currentTarget;
     const orderId = `AS-${Date.now().toString().slice(-6)}`;
 
-    // Build enriched items for the email
     const orderItems = items.map((item) => {
       const fragrance = fragrances.find((f) => f.id === item.fragranceId);
       return {
@@ -37,26 +79,27 @@ export function CheckoutPage() {
     const metadata = {
       orderId,
       firstName: (form.elements.namedItem("firstName") as HTMLInputElement).value,
-      lastName: (form.elements.namedItem("lastName") as HTMLInputElement).value,
-      email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      phone: (form.elements.namedItem("phone") as HTMLInputElement).value,
-      address: (form.elements.namedItem("address") as HTMLInputElement).value,
-      city: (form.elements.namedItem("city") as HTMLInputElement).value,
-      province: (form.elements.namedItem("province") as HTMLInputElement).value,
-      postalCode: (form.elements.namedItem("postalCode") as HTMLInputElement).value,
+      lastName:  (form.elements.namedItem("lastName")  as HTMLInputElement).value,
+      email:     (form.elements.namedItem("email")     as HTMLInputElement).value,
+      phone:     (form.elements.namedItem("phone")     as HTMLInputElement).value,
+      address:   (form.elements.namedItem("address")   as HTMLInputElement).value,
+      city:      (form.elements.namedItem("city")      as HTMLInputElement).value,
+      province:  (form.elements.namedItem("province")  as HTMLInputElement).value,
+      postalCode:(form.elements.namedItem("postalCode") as HTMLInputElement).value,
       items: JSON.stringify(orderItems),
       deliveryInCents: String(delivery * 100),
     };
 
+    // ── Create Yoco checkout ────────────────────────────────────────────────
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/create-checkout`, {
+      const response = await fetch(`${API}/create-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amountInCents: Math.round(total * 100),
           currency: "ZAR",
           successUrl: `${window.location.origin}/success?order=${orderId}`,
-          cancelUrl: `${window.location.origin}/checkout`,
+          cancelUrl:  `${window.location.origin}/checkout`,
           metadata,
         }),
       });
@@ -69,8 +112,9 @@ export function CheckoutPage() {
 
       window.location.href = data.redirectUrl;
 
-    } catch (err: any) {
-      setError(err.message || "Could not start payment. Please try again.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Could not start payment. Please try again.";
+      setError(message);
       setLoading(false);
     }
   };
@@ -101,11 +145,13 @@ export function CheckoutPage() {
               <Input required name="postalCode" placeholder="Postal Code" className="sm:col-span-2" />
 
               {error && (
-                <p className="sm:col-span-2 text-sm text-red-500">{error}</p>
+                <div className="sm:col-span-2 border border-red-500/20 bg-red-500/5 p-3">
+                  <p className="text-sm text-red-400">{error}</p>
+                </div>
               )}
 
               <Button type="submit" className="sm:col-span-2" disabled={loading}>
-                {loading ? "Redirecting to payment..." : "Complete Order"}
+                {loading ? "Verifying stock..." : "Complete Order"}
               </Button>
             </form>
             <CheckoutSummary />
