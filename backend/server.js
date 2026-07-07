@@ -66,23 +66,28 @@ app.post("/create-checkout", async (req, res) => {
 app.post("/webhook", (req, res) => {
   const secret = process.env.YOCO_WEBHOOK_SECRET;
   const signature = req.headers["webhook-signature"];
+  const webhookId = req.headers["webhook-id"];
+  const webhookTimestamp = req.headers["webhook-timestamp"];
 
-  if (!signature) {
-    console.warn("Webhook rejected — no signature header.");
+  if (!signature || !webhookId || !webhookTimestamp) {
+    console.warn("Webhook rejected — missing headers.");
     return res.status(401).json({ error: "Unauthorized." });
   }
 
-  const rawSignature = signature.startsWith("v1,")
-    ? signature.slice(3)
-    : signature;
+  // Build the signed content exactly as Yoco does
+  const signedContent = `${webhookId}.${webhookTimestamp}.${req.body.toString()}`;
 
-  // Strip "whsec_" prefix then decode from base64
+  // Strip "whsec_" prefix and decode from base64
   const secretBuffer = Buffer.from(secret.replace("whsec_", ""), "base64");
 
   const expectedSignature = crypto
     .createHmac("sha256", secretBuffer)
-    .update(req.body)
+    .update(signedContent)
     .digest("base64");
+
+  const rawSignature = signature.startsWith("v1,")
+    ? signature.slice(3)
+    : signature;
 
   if (rawSignature !== expectedSignature) {
     console.warn("Webhook rejected — signature mismatch.");
