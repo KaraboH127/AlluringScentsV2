@@ -127,6 +127,7 @@ app.post("/webhook", async (req, res) => {
       postal_code: metadata.postalCode,
       amount_in_cents: amount,
       checkout_id: metadata.checkoutId,
+      items: items,
     });
 
     if (dbError) {
