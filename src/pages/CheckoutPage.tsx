@@ -22,47 +22,6 @@ export function CheckoutPage() {
     setLoading(true);
     setError(null);
 
-    // ── Stock validation ────────────────────────────────────────────────────
-    try {
-      const stockChecks = await Promise.all(
-        items.map((item) =>
-          fetch(`${API}/stock/${item.fragranceId}`)
-            .then((r) => r.json())
-            .then((data) => {
-              const row = Array.isArray(data)
-                ? data.find((r: { size: string; stock: number }) => r.size === item.size)
-                : null;
-              return {
-                fragranceId: item.fragranceId,
-                size: item.size,
-                quantity: item.quantity,
-                available: row?.stock ?? 0,
-              };
-            })
-        )
-      );
-
-      const outOfStock = stockChecks.filter((s) => s.available === 0);
-      const exceeds    = stockChecks.filter((s) => s.available > 0 && s.quantity > s.available);
-
-      if (outOfStock.length > 0) {
-        setError("Some items in your cart are out of stock. Please review your cart before continuing.");
-        setLoading(false);
-        return;
-      }
-
-      if (exceeds.length > 0) {
-        setError("Some item quantities exceed available stock. Please review your cart before continuing.");
-        setLoading(false);
-        return;
-      }
-    } catch {
-      setError("Could not verify stock. Please try again.");
-      setLoading(false);
-      return;
-    }
-
-    // ── Build order ─────────────────────────────────────────────────────────
     const form = event.currentTarget;
     const orderId = `AS-${Date.now().toString().slice(-6)}`;
 
@@ -78,19 +37,18 @@ export function CheckoutPage() {
 
     const metadata = {
       orderId,
-      firstName: (form.elements.namedItem("firstName") as HTMLInputElement).value,
-      lastName:  (form.elements.namedItem("lastName")  as HTMLInputElement).value,
-      email:     (form.elements.namedItem("email")     as HTMLInputElement).value,
-      phone:     (form.elements.namedItem("phone")     as HTMLInputElement).value,
-      address:   (form.elements.namedItem("address")   as HTMLInputElement).value,
-      city:      (form.elements.namedItem("city")      as HTMLInputElement).value,
-      province:  (form.elements.namedItem("province")  as HTMLInputElement).value,
-      postalCode:(form.elements.namedItem("postalCode") as HTMLInputElement).value,
+      firstName:  (form.elements.namedItem("firstName")  as HTMLInputElement).value,
+      lastName:   (form.elements.namedItem("lastName")   as HTMLInputElement).value,
+      email:      (form.elements.namedItem("email")      as HTMLInputElement).value,
+      phone:      (form.elements.namedItem("phone")      as HTMLInputElement).value,
+      address:    (form.elements.namedItem("address")    as HTMLInputElement).value,
+      city:       (form.elements.namedItem("city")       as HTMLInputElement).value,
+      province:   (form.elements.namedItem("province")   as HTMLInputElement).value,
+      postalCode: (form.elements.namedItem("postalCode") as HTMLInputElement).value,
       items: JSON.stringify(orderItems),
       deliveryInCents: String(delivery * 100),
     };
 
-    // ── Create Yoco checkout ────────────────────────────────────────────────
     try {
       const response = await fetch(`${API}/create-checkout`, {
         method: "POST",
@@ -151,7 +109,7 @@ export function CheckoutPage() {
               )}
 
               <Button type="submit" className="sm:col-span-2" disabled={loading}>
-                {loading ? "Verifying stock..." : "Complete Order"}
+                {loading ? "Redirecting to payment..." : "Complete Order"}
               </Button>
             </form>
             <CheckoutSummary />
