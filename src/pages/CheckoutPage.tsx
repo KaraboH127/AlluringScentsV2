@@ -7,9 +7,12 @@ import { Input } from "../components/ui/Input";
 import { useCart } from "../store/CartContext";
 
 export function CheckoutPage() {
-  const { items, getTotalPrice } = useCart();
+  const { items, subtotal } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const delivery = subtotal > 0 ? 95 : 0;
+  const total = subtotal + delivery;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -19,7 +22,6 @@ export function CheckoutPage() {
     const form = event.currentTarget;
     const orderId = `AS-${Date.now().toString().slice(-6)}`;
 
-    // Collect form values for metadata
     const metadata = {
       orderId,
       firstName: (form.elements.namedItem("firstName") as HTMLInputElement).value,
@@ -37,7 +39,7 @@ export function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amountInCents: Math.round(getTotalPrice() * 100),
+          amountInCents: Math.round(total * 100),
           currency: "ZAR",
           successUrl: `${window.location.origin}/success?order=${orderId}`,
           cancelUrl: `${window.location.origin}/checkout`,
@@ -51,7 +53,6 @@ export function CheckoutPage() {
         throw new Error(data.error || "Something went wrong.");
       }
 
-      // Redirect to Yoco's hosted payment page
       window.location.href = data.redirectUrl;
 
     } catch (err: any) {

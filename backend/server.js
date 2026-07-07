@@ -105,10 +105,10 @@ app.post("/webhook", (req, res) => {
 
   console.log("Webhook received:", event.type);
 
-  if (event.type === "payment.succeeded") {
-    const { metadata, amountInCents } = event.payload;
-    console.log("✅ Payment succeeded:", { metadata, amountInCents });
-  }
+      if (event.type === "payment.succeeded") {
+      const { metadata, amount } = event.payload;
+      console.log("✅ Payment succeeded:", { metadata, amountInCents: amount });
+    }
 
   res.json({ received: true });
 });

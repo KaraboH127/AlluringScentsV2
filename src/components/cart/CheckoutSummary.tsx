@@ -1,12 +1,6 @@
 import { formatCurrency } from "../../config/site";
 import { useCart } from "../../store/CartContext";
 
-/**
- * Checkout-side order recap.
- *
- * Reuses cart totals logic while keeping payment messaging in a dedicated
- * component so checkout form fields remain focused on customer details.
- */
 export function CheckoutSummary() {
   const { subtotal } = useCart();
   const delivery = subtotal > 0 ? 95 : 0;
@@ -27,7 +21,6 @@ export function CheckoutSummary() {
           <span>{formatCurrency(subtotal + delivery)}</span>
         </div>
       </div>
-      <p className="border-t pt-4 text-sm text-muted">Payment integration coming soon.</p>
     </div>
   );
 }
