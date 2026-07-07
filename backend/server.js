@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PATCH"],
   })
 );
 
@@ -110,12 +110,11 @@ app.post("/webhook", async (req, res) => {
   if (event.type === "payment.succeeded") {
     const { metadata, amount } = event.payload;
 
-    // Parse items and delivery from metadata
     const items = JSON.parse(metadata.items || "[]");
     const deliveryInCents = parseInt(metadata.deliveryInCents || "0", 10);
     const subtotalInCents = amount - deliveryInCents;
 
-    // ── Save order to Supabase ──────────────────────────────────────────────
+    // ── Save order ────────────────────────────────────────────────────────────
     const { error: dbError } = await supabase.from("orders").insert({
       order_id: metadata.orderId,
       first_name: metadata.firstName,
@@ -136,9 +135,28 @@ app.post("/webhook", async (req, res) => {
       console.log("✅ Order saved:", metadata.orderId);
     }
 
-    // ── Send confirmation email ─────────────────────────────────────────────
-    const formatCurrency = (cents) =>
-      `R${(cents / 100).toFixed(2)}`;
+    // ── Deduct inventory ──────────────────────────────────────────────────────
+    for (const item of items) {
+      const fragranceId = item.name.toLowerCase().replace(/\s+/g, "-");
+      const { data: current } = await supabase
+        .from("inventory")
+        .select("stock")
+        .eq("fragrance_id", fragranceId)
+        .eq("size", item.size)
+        .single();
+
+      if (current) {
+        const newStock = Math.max(0, current.stock - item.quantity);
+        await supabase
+          .from("inventory")
+          .update({ stock: newStock, updated_at: new Date().toISOString() })
+          .eq("fragrance_id", fragranceId)
+          .eq("size", item.size);
+      }
+    }
+
+    // ── Send confirmation email ───────────────────────────────────────────────
+    const formatCurrency = (cents) => `R${(cents / 100).toFixed(2)}`;
 
     const itemRows = items.map((item) => `
       <tr>
@@ -146,13 +164,8 @@ app.post("/webhook", async (req, res) => {
           <table cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr>
               <td width="72" style="vertical-align: top;">
-                <img
-                  src="${item.image}"
-                  alt="${item.name}"
-                  width="64"
-                  height="64"
-                  style="object-fit: cover; border-radius: 4px; display: block;"
-                />
+                <img src="${item.image}" alt="${item.name}" width="64" height="64"
+                  style="object-fit: cover; border-radius: 4px; display: block;" />
               </td>
               <td style="padding-left: 12px; vertical-align: top; color: #cccccc; font-size: 14px;">
                 <div style="color: #ffffff; font-weight: 600; margin-bottom: 4px;">${item.name}</div>
@@ -177,20 +190,12 @@ app.post("/webhook", async (req, res) => {
     <tr>
       <td align="center" style="padding: 40px 16px;">
         <table cellpadding="0" cellspacing="0" border="0" width="560" style="max-width: 560px; width: 100%;">
-
-          <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom: 32px;">
-              <img
-                src="https://alluring-scents-v2.vercel.app/Alluring_scents_logo.avif"
-                alt="Alluring Scents"
-                width="120"
-                style="display: block;"
-              />
+              <img src="https://alluring-scents-v2.vercel.app/Alluring_scents_logo.avif"
+                alt="Alluring Scents" width="120" style="display: block;" />
             </td>
           </tr>
-
-          <!-- Hero -->
           <tr>
             <td align="center" style="padding-bottom: 32px; border-bottom: 1px solid #2a2a2a;">
               <h1 style="margin: 0 0 8px; font-size: 28px; font-weight: normal; color: #ffffff; letter-spacing: 2px;">
@@ -201,32 +206,20 @@ app.post("/webhook", async (req, res) => {
               </p>
             </td>
           </tr>
-
-          <!-- Order ID -->
           <tr>
             <td style="padding: 24px 0 8px;">
               <p style="margin: 0; font-size: 12px; color: #666666; letter-spacing: 1px; text-transform: uppercase;">Order Reference</p>
               <p style="margin: 4px 0 0; font-size: 20px; color: #c9a84c; letter-spacing: 2px;">${metadata.orderId}</p>
             </td>
           </tr>
-
-          <!-- Divider -->
           <tr><td style="padding: 8px 0;"><hr style="border: none; border-top: 1px solid #2a2a2a;" /></td></tr>
-
-          <!-- Items -->
           <tr>
             <td>
               <p style="margin: 0 0 12px; font-size: 12px; color: #666666; letter-spacing: 1px; text-transform: uppercase;">Your Order</p>
-              <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                ${itemRows}
-              </table>
+              <table cellpadding="0" cellspacing="0" border="0" width="100%">${itemRows}</table>
             </td>
           </tr>
-
-          <!-- Divider -->
           <tr><td style="padding: 8px 0;"><hr style="border: none; border-top: 1px solid #2a2a2a;" /></td></tr>
-
-          <!-- Totals -->
           <tr>
             <td style="padding: 16px 0;">
               <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -245,8 +238,6 @@ app.post("/webhook", async (req, res) => {
               </table>
             </td>
           </tr>
-
-          <!-- Delivery Address -->
           <tr>
             <td style="padding: 16px 0; border-top: 1px solid #2a2a2a;">
               <p style="margin: 0 0 8px; font-size: 12px; color: #666666; letter-spacing: 1px; text-transform: uppercase;">Delivering To</p>
@@ -257,20 +248,14 @@ app.post("/webhook", async (req, res) => {
               </p>
             </td>
           </tr>
-
-          <!-- Sign off -->
           <tr>
             <td align="center" style="padding: 32px 0; border-top: 1px solid #2a2a2a;">
               <p style="margin: 0 0 8px; font-size: 13px; color: #888888; font-style: italic;">
                 Your trust in Alluring Scents is the greatest compliment we could've gotten.
               </p>
-              <p style="margin: 0; font-size: 13px; color: #666666;">
-                You smell scent-sational. 🖤
-              </p>
+              <p style="margin: 0; font-size: 13px; color: #666666;">You smell scent-sational. 🖤</p>
             </td>
           </tr>
-
-          <!-- Footer -->
           <tr>
             <td align="center" style="padding-top: 24px; border-top: 1px solid #1a1a1a;">
               <p style="margin: 0; font-size: 11px; color: #444444; letter-spacing: 1px;">
@@ -278,14 +263,12 @@ app.post("/webhook", async (req, res) => {
               </p>
             </td>
           </tr>
-
         </table>
       </td>
     </tr>
   </table>
 </body>
-</html>
-    `;
+</html>`;
 
     const { error: emailError } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
@@ -320,6 +303,154 @@ app.get("/order/:orderId", async (req, res) => {
   }
 
   res.json(data);
+});
+
+// ─── Admin — Login ────────────────────────────────────────────────────────────
+
+app.post("/admin/login", async (req, res) => {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: "Password required." });
+  }
+
+  const { data, error } = await supabase
+    .from("admin_config")
+    .select("password_hash")
+    .eq("id", 1)
+    .single();
+
+  if (error || !data) {
+    return res.status(500).json({ error: "Admin config not found." });
+  }
+
+  const { data: match } = await supabase
+    .rpc("verify_password", {
+      password,
+      hash: data.password_hash,
+    });
+
+  if (!match) {
+    return res.status(401).json({ error: "Invalid password." });
+  }
+
+  res.json({ token: process.env.ADMIN_TOKEN });
+});
+
+// ─── Admin — Middleware ───────────────────────────────────────────────────────
+
+function requireAdmin(req, res, next) {
+  const auth = req.headers["authorization"];
+  if (!auth || auth !== `Bearer ${process.env.ADMIN_TOKEN}`) {
+    return res.status(401).json({ error: "Unauthorized." });
+  }
+  next();
+}
+
+// ─── Admin — Orders ───────────────────────────────────────────────────────────
+
+app.get("/admin/orders", requireAdmin, async (req, res) => {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return res.status(500).json({ error: "Failed to fetch orders." });
+  }
+
+  res.json(data);
+});
+
+app.patch("/admin/orders/:orderId/status", requireAdmin, async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  const validStatuses = ["succeeded", "fulfilled", "shipped"];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: "Invalid status." });
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("order_id", orderId);
+
+  if (error) {
+    return res.status(500).json({ error: "Failed to update status." });
+  }
+
+  res.json({ success: true });
+});
+
+// ─── Admin — Inventory ────────────────────────────────────────────────────────
+
+app.get("/admin/inventory", requireAdmin, async (req, res) => {
+  const { data, error } = await supabase
+    .from("inventory")
+    .select("*")
+    .order("collection")
+    .order("fragrance_name")
+    .order("size");
+
+  if (error) {
+    return res.status(500).json({ error: "Failed to fetch inventory." });
+  }
+
+  res.json(data);
+});
+
+app.patch("/admin/inventory/:id", requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { stock } = req.body;
+
+  if (typeof stock !== "number" || stock < 0) {
+    return res.status(400).json({ error: "Invalid stock value." });
+  }
+
+  const { error } = await supabase
+    .from("inventory")
+    .update({ stock, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) {
+    return res.status(500).json({ error: "Failed to update stock." });
+  }
+
+  res.json({ success: true });
+});
+
+// ─── Admin — Stats ────────────────────────────────────────────────────────────
+
+app.get("/admin/stats", requireAdmin, async (req, res) => {
+  const { data: orders, error } = await supabase
+    .from("orders")
+    .select("amount_in_cents, status, created_at");
+
+  if (error) {
+    return res.status(500).json({ error: "Failed to fetch stats." });
+  }
+
+  const totalRevenue = orders.reduce((acc, o) => acc + o.amount_in_cents, 0);
+  const totalOrders = orders.length;
+  const fulfilled = orders.filter((o) => o.status === "fulfilled").length;
+  const shipped = orders.filter((o) => o.status === "shipped").length;
+  const pending = orders.filter((o) => o.status === "succeeded").length;
+
+  const { data: lowStock } = await supabase
+    .from("inventory")
+    .select("fragrance_name, size, stock")
+    .lte("stock", 5)
+    .order("stock");
+
+  res.json({
+    totalRevenue,
+    totalOrders,
+    fulfilled,
+    shipped,
+    pending,
+    lowStock: lowStock || [],
+  });
 });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
