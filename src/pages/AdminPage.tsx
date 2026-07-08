@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { Skeleton } from "../components/ui/Skeleton";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -313,7 +314,38 @@ export function AdminPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64 text-[#666] text-sm">Loading...</div>
+        <div className="px-4 sm:px-6 py-6 max-w-6xl mx-auto space-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="border border-[#1a1a1a] p-4 space-y-2">
+                <Skeleton variant="dark" className="h-3 w-20" />
+                <Skeleton variant="dark" className="h-7 w-24" />
+              </div>
+            ))}
+          </div>
+          <div className="border border-[#1a1a1a] p-4 space-y-3">
+            <Skeleton variant="dark" className="h-3 w-32" />
+            <div className="flex flex-wrap gap-2">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} variant="dark" className="h-7 w-36" />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="border border-[#1a1a1a] p-4 flex items-center justify-between gap-4">
+                <div className="space-y-2 flex-1">
+                  <Skeleton variant="dark" className="h-4 w-24" />
+                  <Skeleton variant="dark" className="h-4 w-40" />
+                </div>
+                <div className="space-y-2 flex-shrink-0">
+                  <Skeleton variant="dark" className="h-4 w-16" />
+                  <Skeleton variant="dark" className="h-5 w-20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="px-4 sm:px-6 py-6 max-w-6xl mx-auto space-y-6">
 
@@ -428,7 +460,7 @@ export function AdminPage() {
                       <p className="text-sm truncate">{order.first_name} {order.last_name}</p>
                       <p className="text-xs text-[#666] truncate hidden sm:block">{order.email}</p>
                     </div>
-                    <div className="text-right space-y-1 flex-shrink-0">
+                    <div className="text-right space-y-1 shrink-0">
                       <p className="text-sm">{fmt(order.amount_in_cents)}</p>
                       <span className={`text-xs px-2 py-0.5 rounded-full inline-block ${statusColor[order.status]}`}>
                         {order.status}
@@ -453,7 +485,11 @@ export function AdminPage() {
                 <div key={label} className="space-y-3">
                   <p className="text-xs text-[#666] uppercase tracking-widest">{label}</p>
                   <div className="grid gap-2">
-                    {Object.entries(
+                    {items.length === 0 ? (
+                      <div className="border border-[#1a1a1a] p-4">
+                        <Skeleton variant="dark" className="h-4 w-24" />
+                      </div>
+                    ) : Object.entries(
                       items.reduce<Record<string, InventoryItem[]>>((acc, item) => {
                         if (!acc[item.fragrance_name]) acc[item.fragrance_name] = [];
                         acc[item.fragrance_name].push(item);
@@ -478,6 +514,7 @@ export function AdminPage() {
                                     }))
                                   }
                                   className="w-14 sm:w-16 bg-[#111] border border-[#222] text-white px-2 py-1 text-sm outline-none focus:border-[#c9a84c] transition-colors"
+                                  aria-label={`Stock for ${item.size}`}
                                 />
                                 <button
                                   onClick={() => saveStock(item.id)}

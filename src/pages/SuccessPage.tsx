@@ -5,6 +5,7 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { siteConfig } from "../config/site";
 import { Image } from "../components/ui/Image";
+import { Skeleton } from "../components/ui/Skeleton";
 import { useCart } from "../store/CartContext";
 
 const API = import.meta.env.VITE_API_URL;
@@ -90,9 +91,41 @@ export function SuccessPage() {
       />
       <Section>
         {loading ? (
-          <div className="mx-auto max-w-4xl border p-8 text-center space-y-3">
-            <p className="text-lg site-heading">Confirming your order...</p>
-            <p className="text-sm text-muted">Please wait a moment.</p>
+          <div className="mx-auto max-w-4xl border p-6 md:p-8 space-y-8">
+            <div className="grid gap-8 md:grid-cols-2 md:items-center">
+              <Skeleton className="h-64 w-full" />
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-40" />
+                <Skeleton className="h-5 w-56" />
+                <Skeleton className="h-4 w-44" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            </div>
+            <div className="space-y-4 border-t pt-6">
+              <Skeleton className="h-4 w-32" />
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex items-center gap-4 py-3 border-b last:border-0">
+                  <Skeleton className="h-14 w-14 rounded" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-36" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              ))}
+            </div>
+            <div className="grid gap-6 border-t pt-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-4 w-44" />
+              </div>
+            </div>
           </div>
         ) : (
           <div className="mx-auto max-w-4xl border p-6 md:p-8 space-y-8">
@@ -149,7 +182,7 @@ export function SuccessPage() {
                           <p className="text-sm font-medium">{item.name}</p>
                           <p className="text-xs text-muted mt-0.5">{item.size}</p>
                         </div>
-                        <p className="text-sm text-muted flex-shrink-0">Qty: {item.quantity}</p>
+                        <p className="text-sm text-muted shrink-0">Qty: {item.quantity}</p>
                       </div>
                     ))}
                   </div>

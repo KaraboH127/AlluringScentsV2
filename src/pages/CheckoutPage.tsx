@@ -4,6 +4,7 @@ import { CheckoutSummary } from "../components/cart/CheckoutSummary";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { Skeleton } from "../components/ui/Skeleton";
 import { useCart } from "../store/CartContext";
 import { fragrances } from "../config/site";
 
@@ -92,26 +93,39 @@ export function CheckoutPage() {
           <p className="text-muted">Your cart is empty.</p>
         ) : (
           <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
-            <form className="grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
-              <Input required name="firstName" placeholder="First Name" />
-              <Input required name="lastName" placeholder="Last Name" />
-              <Input required name="email" type="email" placeholder="Email" />
-              <Input required name="phone" placeholder="Phone Number" />
-              <Input required name="address" placeholder="Address" className="sm:col-span-2" />
-              <Input required name="city" placeholder="City" />
-              <Input required name="province" placeholder="Province" />
-              <Input required name="postalCode" placeholder="Postal Code" className="sm:col-span-2" />
-
-              {error && (
-                <div className="sm:col-span-2 border border-red-500/20 bg-red-500/5 p-3">
-                  <p className="text-sm text-red-400">{error}</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {loading ? (
+                <div className="sm:col-span-2 space-y-4 rounded border border-white/10 p-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <Skeleton key={index} className={`h-11 ${index === 4 ? "sm:col-span-2" : ""}`} />
+                    ))}
+                  </div>
+                  <Skeleton className="h-11 w-full" />
                 </div>
-              )}
+              ) : (
+                <form className="grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
+                  <Input required name="firstName" placeholder="First Name" />
+                  <Input required name="lastName" placeholder="Last Name" />
+                  <Input required name="email" type="email" placeholder="Email" />
+                  <Input required name="phone" placeholder="Phone Number" />
+                  <Input required name="address" placeholder="Address" className="sm:col-span-2" />
+                  <Input required name="city" placeholder="City" />
+                  <Input required name="province" placeholder="Province" />
+                  <Input required name="postalCode" placeholder="Postal Code" className="sm:col-span-2" />
 
-              <Button type="submit" className="sm:col-span-2" disabled={loading}>
-                {loading ? "Redirecting to payment..." : "Complete Order"}
-              </Button>
-            </form>
+                  {error && (
+                    <div className="sm:col-span-2 border border-red-500/20 bg-red-500/5 p-3">
+                      <p className="text-sm text-red-400">{error}</p>
+                    </div>
+                  )}
+
+                  <Button type="submit" className="sm:col-span-2" disabled={loading}>
+                    Complete Order
+                  </Button>
+                </form>
+              )}
+            </div>
             <CheckoutSummary />
           </div>
         )}

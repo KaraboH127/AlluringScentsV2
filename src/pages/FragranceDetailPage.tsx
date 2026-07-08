@@ -7,6 +7,7 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { QuantitySelector } from "../components/ui/QuantitySelector";
 import { Select } from "../components/ui/Select";
+import { Skeleton } from "../components/ui/Skeleton";
 import { collections, formatCurrency, getFragranceBySlug, siteConfig } from "../config/site";
 import { useCart } from "../store/CartContext";
 import type { SizeOption } from "../types/site";
@@ -131,43 +132,47 @@ export function FragranceDetailPage() {
               </Select>
             </label>
 
-            {/* Stock status */}
-            {!stockLoading && (
-              <p className={`text-xs tracking-wide ${
-                isOutOfStock ? "text-red-400" :
-                isLowStock   ? "text-yellow-400" :
-                               "text-green-500"
-              }`}>
-                {isOutOfStock
-                  ? "Out of stock for this size"
-                  : isLowStock
-                  ? `Only ${currentStock} left`
-                  : "In stock"}
-              </p>
+            {stockLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-3 w-28" />
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <Skeleton className="h-11 w-full" />
+              </div>
+            ) : (
+              <>
+                <p className={`text-xs tracking-wide ${
+                  isOutOfStock ? "text-red-400" :
+                  isLowStock   ? "text-yellow-400" :
+                                 "text-green-500"
+                }`}>
+                  {isOutOfStock
+                    ? "Out of stock for this size"
+                    : isLowStock
+                    ? `Only ${currentStock} left`
+                    : "In stock"}
+                </p>
+
+                <div className="space-y-2">
+                  <p className="text-xs uppercase tracking-[0.14em] text-muted">Quantity Selector</p>
+                  <QuantitySelector
+                    value={quantity}
+                    onChange={setQuantity}
+                    max={isOutOfStock ? 0 : currentStock}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleAddToCart}
+                  className="w-full"
+                  disabled={isOutOfStock || stockLoading}
+                >
+                  {isOutOfStock ? "Out of Stock" : added ? "Added ✓" : "Add To Cart"}
+                </Button>
+              </>
             )}
-
-            <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.14em] text-muted">Quantity Selector</p>
-              <QuantitySelector
-                value={quantity}
-                onChange={setQuantity}
-                max={isOutOfStock ? 0 : currentStock}
-              />
-            </div>
-
-            <Button
-              onClick={handleAddToCart}
-              className="w-full"
-              disabled={isOutOfStock || stockLoading}
-            >
-              {stockLoading
-                ? "Checking stock..."
-                : isOutOfStock
-                ? "Out of Stock"
-                : added
-                ? "Added ✓"
-                : "Add To Cart"}
-            </Button>
 
             <Link to="/collections">
               <Button variant="ghost" className="w-full">

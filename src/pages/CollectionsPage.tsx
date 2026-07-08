@@ -3,6 +3,7 @@ import { SEOHead } from "../SEOHead";
 import { PricingTable } from "../components/fragrance/PricingTable";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
+import { Skeleton } from "../components/ui/Skeleton";
 import { collections, fragrances } from "../config/site";
 
 export function CollectionsPage() {
@@ -17,7 +18,7 @@ export function CollectionsPage() {
       <Section>
         <h1 className="mb-10 text-4xl site-heading md:text-5xl">Collections</h1>
         <div className="space-y-12">
-          {collections.map((collection) => {
+          {collections.length > 0 ? collections.map((collection) => {
             const items = fragrances.filter((fragrance) => fragrance.collection === collection.id);
             return (
               <article key={collection.id} className="grid gap-8 border panel-surface p-6 lg:grid-cols-[1.5fr_1fr]">
@@ -44,7 +45,26 @@ export function CollectionsPage() {
                 </div>
               </article>
             );
-          })}
+          }) : Array.from({ length: 2 }).map((_, index) => (
+            <div key={index} className="grid gap-8 border panel-surface p-6 lg:grid-cols-[1.5fr_1fr]">
+              <div className="space-y-5">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-8 w-64" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {Array.from({ length: 4 }).map((_, chipIndex) => (
+                    <Skeleton key={chipIndex} className="h-8 w-24" />
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-4">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-40 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
     </>

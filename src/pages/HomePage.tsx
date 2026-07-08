@@ -6,6 +6,7 @@ import { CollectionGrid } from "../components/fragrance/CollectionGrid";
 import { Section } from "../components/layout/Section";
 import { Image } from "../components/ui/Image";
 import { Button } from "../components/ui/Button";
+import { Skeleton } from "../components/ui/Skeleton";
 import { collections, featuredFragrances, fragrances, homeWhyChoose, siteConfig } from "../config/site";
 import { organizationSchema } from "../utils/seo";
 
@@ -22,6 +23,7 @@ export function HomePage() {
       />
 
       <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden section-surface">
+        <Skeleton className="absolute inset-0 h-full w-full" />
         <Image src={siteConfig.images.hero} alt="Luxury fragrance hero" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-white/95" />
         <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.8fr)_1fr]">

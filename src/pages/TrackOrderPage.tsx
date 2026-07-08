@@ -3,6 +3,7 @@ import { SEOHead } from "../SEOHead";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { Skeleton } from "../components/ui/Skeleton";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -126,7 +127,42 @@ export function TrackOrderPage() {
           )}
 
           {/* Order result */}
-          {order && (
+          {loading ? (
+            <div className="space-y-6">
+              <div className="border p-6 space-y-6">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-8 w-44" />
+                <Skeleton className="h-4 w-36" />
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="flex flex-1 items-center gap-2">
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      {index < 2 && <Skeleton className="h-px flex-1" />}
+                    </div>
+                  ))}
+                </div>
+                <Skeleton className="h-16 w-full" />
+              </div>
+              <div className="border p-6 space-y-4">
+                <Skeleton className="h-4 w-32" />
+                {Array.from({ length: 2 }).map((_, index) => (
+                  <div key={index} className="flex items-center gap-4 py-3 border-b last:border-0">
+                    <Skeleton className="h-14 w-14 rounded" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-36" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))}
+              </div>
+              <div className="border p-6 space-y-3">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </div>
+          ) : order ? (
             <div className="space-y-6">
 
               {/* Status tracker */}
@@ -149,7 +185,7 @@ export function TrackOrderPage() {
                       const isActive   = currentStep === i + 1;
                       return (
                         <div key={step.key} className="flex items-center flex-1 last:flex-none">
-                          <div className="flex flex-col items-center gap-1">
+                          <div className="flex flex-col items-center gap-1 shrink-0">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border transition-colors ${
                               isComplete || isActive
                                 ? "bg-[#c9a84c] border-[#c9a84c] text-black"
@@ -235,7 +271,7 @@ export function TrackOrderPage() {
               </div>
 
             </div>
-          )}
+          ) : null}
         </div>
       </Section>
     </>

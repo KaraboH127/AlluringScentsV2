@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/</loc>
+    <loc>https://alluring-scents-v2.vercel.app//</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/our-story</loc>
+    <loc>https://alluring-scents-v2.vercel.app//our-story</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/collections</loc>
+    <loc>https://alluring-scents-v2.vercel.app//collections</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/pricing</loc>
+    <loc>https://alluring-scents-v2.vercel.app//pricing</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/journal</loc>
+    <loc>https://alluring-scents-v2.vercel.app//journal</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/cart</loc>
+    <loc>https://alluring-scents-v2.vercel.app//cart</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/checkout</loc>
+    <loc>https://alluring-scents-v2.vercel.app//checkout</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://alluring-scents-v2.vercel.app/success</loc>
+    <loc>https://alluring-scents-v2.vercel.app//success</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
