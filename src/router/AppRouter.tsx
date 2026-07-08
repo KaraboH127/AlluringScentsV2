@@ -12,6 +12,7 @@ import { PricingPage } from "../pages/PricingPage";
 import { StoryPage } from "../pages/StoryPage";
 import { SuccessPage } from "../pages/SuccessPage";
 import { AdminPage } from "../pages/AdminPage";
+import { TrackOrderPage } from "../pages/TrackOrderPage";
 
 export function AppRouter() {
   return (
@@ -35,6 +36,7 @@ export function AppRouter() {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/success" element={<SuccessPage />} />
+              <Route path="/track-order" element={<TrackOrderPage />} />
               <Route path="/404" element={<NotFoundPage />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
             </Routes>

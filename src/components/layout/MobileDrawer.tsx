@@ -15,6 +15,7 @@ const mobileLinks = [
   { label: "Collections", path: "/collections" },
   { label: "Pricing", path: "/pricing" },
   { label: "Journal", path: "/journal" },
+  { label: "Track Order", path: "/track-order" },
   { label: "Cart", path: "/cart" },
   { label: "Checkout", path: "/checkout" },
 ];
