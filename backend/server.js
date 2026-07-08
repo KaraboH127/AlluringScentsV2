@@ -471,6 +471,180 @@ app.get("/admin/stats", requireAdmin, async (req, res) => {
   });
 });
 
+// ─── Public — Fragrances ──────────────────────────────────────────────────────
+
+app.get("/fragrances", async (req, res) => {
+  const { data, error } = await supabase
+    .from("fragrances")
+    .select("*, collection:collections(*)")
+    .eq("active", true)
+    .order("created_at");
+
+  if (error) return res.status(500).json({ error: "Failed to fetch fragrances." });
+  res.json(data);
+});
+
+app.get("/fragrances/:slug", async (req, res) => {
+  const { data, error } = await supabase
+    .from("fragrances")
+    .select("*, collection:collections(*)")
+    .eq("slug", req.params.slug)
+    .eq("active", true)
+    .single();
+
+  if (error || !data) return res.status(404).json({ error: "Fragrance not found." });
+  res.json(data);
+});
+
+app.get("/collections", async (req, res) => {
+  const { data, error } = await supabase
+    .from("collections")
+    .select("*")
+    .eq("active", true)
+    .order("created_at");
+
+  if (error) return res.status(500).json({ error: "Failed to fetch collections." });
+  res.json(data);
+});
+
+// ─── Admin — Fragrances ───────────────────────────────────────────────────────
+
+app.get("/admin/fragrances", requireAdmin, async (req, res) => {
+  const { data, error } = await supabase
+    .from("fragrances")
+    .select("*, collection:collections(*)")
+    .order("created_at");
+
+  if (error) return res.status(500).json({ error: "Failed to fetch fragrances." });
+  res.json(data);
+});
+
+app.post("/admin/fragrances", requireAdmin, async (req, res) => {
+  const {
+    id, slug, name, collection_id, description, extrait,
+    notes, best_for, occasions, personality, image_url,
+  } = req.body;
+
+  if (!id || !slug || !name || !collection_id || !image_url) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  // Create fragrance
+  const { error: fragError } = await supabase.from("fragrances").insert({
+    id, slug, name, collection_id, description, extrait,
+    notes, best_for, occasions, personality, image_url,
+    active: true,
+  });
+
+  if (fragError) return res.status(500).json({ error: fragError.message });
+
+  // Auto-create inventory rows for all 3 sizes
+  const sizes = ["10ml", "50ml", "100ml"];
+  const inventoryRows = sizes.map((size) => ({
+    fragrance_id: id,
+    fragrance_name: name,
+    collection: collection_id,
+    size,
+    stock: 0,
+  }));
+
+  const { error: invError } = await supabase.from("inventory").insert(inventoryRows);
+  if (invError) console.error("Inventory auto-create error:", invError.message);
+
+  res.json({ success: true });
+});
+
+app.patch("/admin/fragrances/:id", requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  const { error } = await supabase
+    .from("fragrances")
+    .update(updates)
+    .eq("id", id);
+
+  if (error) return res.status(500).json({ error: "Failed to update fragrance." });
+  res.json({ success: true });
+});
+
+app.patch("/admin/fragrances/:id/status", requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { active } = req.body;
+
+  const { error } = await supabase
+    .from("fragrances")
+    .update({ active })
+    .eq("id", id);
+
+  if (error) return res.status(500).json({ error: "Failed to update status." });
+  res.json({ success: true });
+});
+
+// ─── Admin — Collections ──────────────────────────────────────────────────────
+
+app.get("/admin/collections", requireAdmin, async (req, res) => {
+  const { data, error } = await supabase
+    .from("collections")
+    .select("*")
+    .order("created_at");
+
+  if (error) return res.status(500).json({ error: "Failed to fetch collections." });
+  res.json(data);
+});
+
+app.post("/admin/collections", requireAdmin, async (req, res) => {
+  const { id, name, label, tagline, description, prices } = req.body;
+
+  if (!id || !name || !prices) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  const { error } = await supabase.from("collections").insert({
+    id, name, label, tagline, description, prices, active: true,
+  });
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
+app.patch("/admin/collections/:id", requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  const { error } = await supabase
+    .from("collections")
+    .update(updates)
+    .eq("id", id);
+
+  if (error) return res.status(500).json({ error: "Failed to update collection." });
+  res.json({ success: true });
+});
+
+// ─── Admin — Image Upload ─────────────────────────────────────────────────────
+
+app.post("/admin/upload-image", requireAdmin, async (req, res) => {
+  const { base64, fileName, mimeType } = req.body;
+
+  if (!base64 || !fileName || !mimeType) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  const buffer = Buffer.from(base64, "base64");
+  const filePath = `fragrances/${Date.now()}-${fileName}`;
+
+  const { error } = await supabase.storage
+    .from("fragrance-images")
+    .upload(filePath, buffer, { contentType: mimeType, upsert: false });
+
+  if (error) return res.status(500).json({ error: error.message });
+
+  const { data } = supabase.storage
+    .from("fragrance-images")
+    .getPublicUrl(filePath);
+
+  res.json({ url: data.publicUrl });
+});
+
 // ─── Start Server ─────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3001;
