@@ -2,12 +2,6 @@ import { Link } from "react-router-dom";
 import { siteConfig } from "../../config/site";
 import { Container } from "./Container";
 
-/**
- * Global footer.
- *
- * Uses centralized navigation and brand copy from config to avoid duplicate
- * hard-coded links across page templates.
- */
 export function Footer() {
   return (
     <footer className="py-12 site-footer">
@@ -22,6 +16,19 @@ export function Footer() {
               {item.label}
             </Link>
           ))}
+        </div>
+
+        {/* Legal links */}
+        <div className="border-t border-[rgba(255,255,255,0.08)] pt-5 flex flex-wrap justify-center gap-4 md:justify-start">
+          <Link to="/privacy-policy" className="text-xs uppercase tracking-[0.15em] footer-link">
+            Privacy Policy
+          </Link>
+          <Link to="/terms-of-use" className="text-xs uppercase tracking-[0.15em] footer-link">
+            Terms of Use
+          </Link>
+          <span className="text-xs text-muted">
+            © {new Date().getFullYear()} Alluring Notes T/A Alluring Scents
+          </span>
         </div>
       </Container>
     </footer>

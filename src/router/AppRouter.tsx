@@ -13,6 +13,8 @@ import { StoryPage } from "../pages/StoryPage";
 import { SuccessPage } from "../pages/SuccessPage";
 import { AdminPage } from "../pages/AdminPage";
 import { TrackOrderPage } from "../pages/TrackOrderPage";
+import { PrivacyPolicyPage } from "../pages/PrivacyPolicyPage";
+import { TermsOfUsePage } from "../pages/TermsOfUsePage";
 
 export function AppRouter() {
   return (
@@ -38,6 +40,8 @@ export function AppRouter() {
               <Route path="/success" element={<SuccessPage />} />
               <Route path="/track-order" element={<TrackOrderPage />} />
               <Route path="/404" element={<NotFoundPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms-of-use" element={<TermsOfUsePage />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
             </Routes>
           </Layout>
