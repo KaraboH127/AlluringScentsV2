@@ -56,9 +56,9 @@ export function TermsOfUsePage() {
               (ZAR) and include VAT where applicable.
             </p>
             <p className="text-sm text-muted leading-relaxed">
-              Payments are processed securely through Yoco. By placing an order, you confirm that you are
-              authorised to use the payment method provided. Your order is confirmed once payment has been
-              successfully processed and you have received a confirmation email.
+              Payments are processed securely through a third-party payment provider. By placing an order,
+              you confirm that you are authorised to use the payment method provided. Your order is confirmed
+              once payment has been successfully processed and you have received a confirmation email.
             </p>
           </div>
 
