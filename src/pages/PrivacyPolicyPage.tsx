@@ -46,7 +46,7 @@ export function PrivacyPolicyPage() {
               <li>Email address</li>
               <li>Phone number</li>
               <li>Delivery address (street address, city, province, postal code)</li>
-              <li>Payment information (processed securely by Yoco — we do not store card details)</li>
+              <li>Payment information (processed securely by our payment provider — we do not store card details)</li>
               <li>Order history and transaction details</li>
               <li>Device and browser information collected automatically when you visit our website</li>
             </ul>
@@ -72,18 +72,16 @@ export function PrivacyPolicyPage() {
           <div className="space-y-3">
             <h2 className="text-xl site-heading">4. How We Share Your Information</h2>
             <p className="text-sm text-muted leading-relaxed">
-              We may share your information with trusted third-party service providers solely to operate our business:
+              To operate our business and fulfil your orders, we work with carefully selected third-party
+              service providers. These providers assist us with payment processing, data storage, email
+              communications, website hosting, and order delivery. Your personal information is shared
+              with these parties only to the extent necessary to provide you with our services.
             </p>
-            <ul className="text-sm text-muted leading-relaxed space-y-1 list-disc list-inside">
-              <li><strong>Yoco</strong> — payment processing</li>
-              <li><strong>Supabase</strong> — secure database storage</li>
-              <li><strong>Resend</strong> — transactional email delivery</li>
-              <li><strong>Vercel</strong> — website hosting</li>
-              <li><strong>Delivery partners</strong> — to fulfil and ship your order</li>
-            </ul>
             <p className="text-sm text-muted leading-relaxed">
-              All service providers are contractually obligated to keep your information confidential and use
-              it only for the purposes for which it was shared.
+              All third-party service providers are required to handle your information responsibly,
+              keep it confidential, and use it solely for the purposes for which it was shared. We do
+              not permit any third party to use your personal information for their own marketing or
+              commercial purposes.
             </p>
           </div>
 
@@ -91,9 +89,10 @@ export function PrivacyPolicyPage() {
           <div className="space-y-3">
             <h2 className="text-xl site-heading">5. Payment Security</h2>
             <p className="text-sm text-muted leading-relaxed">
-              All payments are processed by Yoco, a PCI DSS compliant payment provider. We never store, process,
-              or transmit your card details on our servers. Your payment information is handled entirely by Yoco's
-              secure infrastructure.
+              All payments are processed by a PCI DSS compliant third-party payment provider. We never
+              store, process, or transmit your card details on our servers. Your payment information is
+              handled entirely within our payment provider's secure infrastructure, and we have no access
+              to your full card details at any time.
             </p>
           </div>
 
