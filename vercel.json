@@ -5,6 +5,23 @@
       "destination": "/index.html"
     }
   ],
+  "routes": [
+    {
+      "src": "/((?!api|assets|.*\\..*).*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(bot|crawl|spider|whatsapp|facebot|facebookexternalhit|twitterbot|linkedinbot|telegrambot|discordbot|slack).*"
+        }
+      ],
+      "dest": "/api/og?path=/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "(.*)",
