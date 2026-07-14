@@ -21,8 +21,10 @@ export function PrivacyPolicyPage() {
           <p className="text-sm text-muted leading-relaxed">
             Alluring Notes (trading as Alluring Scents) ("we", "us", "our") is committed to protecting your
             personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard
-            your information when you visit our website or place an order with us. Please read this policy
-            carefully. By using our website, you agree to the terms of this Privacy Policy.
+            your information when you visit our website or place an order with us. We undertake to process
+            all personal information in accordance with the Protection of Personal Information Act 4 of 2013
+            ("POPIA") and any other applicable South African legislation. Please read this policy carefully.
+            By using our website, you agree to the terms of this Privacy Policy.
           </p>
 
           {/* 1 */}
@@ -98,7 +100,19 @@ export function PrivacyPolicyPage() {
 
           {/* 6 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">6. Data Retention</h2>
+            <h2 className="text-xl site-heading">6. Data Security</h2>
+            <p className="text-sm text-muted leading-relaxed">
+              We have implemented appropriate, reasonable technical and organisational measures to
+              safeguard your personal information against accidental or unlawful destruction, loss,
+              alteration, unauthorised disclosure of, or access to personal information processed by us.
+              While we take all reasonable steps to protect your information, no method of transmission
+              over the internet is completely secure and we cannot guarantee absolute security.
+            </p>
+          </div>
+
+          {/* 7 */}
+          <div className="space-y-3">
+            <h2 className="text-xl site-heading">7. Data Retention</h2>
             <p className="text-sm text-muted leading-relaxed">
               We retain your personal information for as long as necessary to fulfil the purposes outlined in
               this policy, or as required by South African law. Order records are retained for a minimum of
@@ -106,9 +120,9 @@ export function PrivacyPolicyPage() {
             </p>
           </div>
 
-          {/* 7 */}
+          {/* 8 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">7. Your Rights (POPIA)</h2>
+            <h2 className="text-xl site-heading">8. Your Rights (POPIA)</h2>
             <p className="text-sm text-muted leading-relaxed">
               Under the Protection of Personal Information Act 4 of 2013 (POPIA), you have the right to:
             </p>
@@ -127,9 +141,9 @@ export function PrivacyPolicyPage() {
             </p>
           </div>
 
-          {/* 8 */}
+          {/* 9 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">8. Cookies</h2>
+            <h2 className="text-xl site-heading">9. Cookies</h2>
             <p className="text-sm text-muted leading-relaxed">
               Our website uses local storage to maintain your shopping cart between sessions. We do not use
               third-party tracking cookies or advertising cookies. No personal data is stored in your browser
@@ -137,18 +151,18 @@ export function PrivacyPolicyPage() {
             </p>
           </div>
 
-          {/* 9 */}
+          {/* 10 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">9. Changes to This Policy</h2>
+            <h2 className="text-xl site-heading">10. Changes to This Policy</h2>
             <p className="text-sm text-muted leading-relaxed">
               We may update this Privacy Policy from time to time. Any changes will be posted on this page with
               an updated effective date. We encourage you to review this policy periodically.
             </p>
           </div>
 
-          {/* 10 */}
+          {/* 11 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">10. Contact Us</h2>
+            <h2 className="text-xl site-heading">11. Contact Us</h2>
             <p className="text-sm text-muted leading-relaxed">
               If you have any questions about this Privacy Policy or how we handle your personal information,
               please contact us at{" "}

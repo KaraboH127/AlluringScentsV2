@@ -15,6 +15,7 @@ import { AdminPage } from "../pages/AdminPage";
 import { TrackOrderPage } from "../pages/TrackOrderPage";
 import { PrivacyPolicyPage } from "../pages/PrivacyPolicyPage";
 import { TermsOfUsePage } from "../pages/TermsOfUsePage";
+import { ReturnsRefundsPage } from "../pages/ReturnsRefundsPage";
 
 export function AppRouter() {
   return (
@@ -42,6 +43,7 @@ export function AppRouter() {
               <Route path="/404" element={<NotFoundPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms-of-use" element={<TermsOfUsePage />} />
+              <Route path="/returns-refunds" element={<ReturnsRefundsPage />} />
               <Route path="*" element={<Navigate to="/404" replace />} />
             </Routes>
           </Layout>

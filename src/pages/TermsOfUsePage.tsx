@@ -67,9 +67,13 @@ export function TermsOfUsePage() {
             <h2 className="text-xl site-heading">4. Delivery</h2>
             <p className="text-sm text-muted leading-relaxed">
               A flat delivery fee of R95.00 applies to all orders. We deliver within South Africa only.
-              Delivery timeframes are estimates and may vary depending on your location and courier availability.
-              We are not liable for delays caused by third-party courier services or circumstances beyond our
-              reasonable control.
+              Delivery timeframes are estimates only and may vary depending on your location, courier
+              availability, public holidays, adverse weather, strikes or other unforeseen events
+              (force majeure).
+            </p>
+            <p className="text-sm text-muted leading-relaxed">
+              We are not liable for delays caused by third-party courier services or circumstances
+              beyond our reasonable control.
             </p>
           </div>
 
@@ -77,41 +81,28 @@ export function TermsOfUsePage() {
           <div className="space-y-3">
             <h2 className="text-xl site-heading">5. Returns and Refunds</h2>
             <p className="text-sm text-muted leading-relaxed">
-              We want you to be completely satisfied with your purchase. Our returns and refunds policy is as follows:
+              Our full returns, refunds and exchanges policy is available on our{" "}
+              <a href="/returns-refunds" className="accent-gold hover:underline">
+                Returns, Refunds & Exchanges
+              </a>{" "}
+              page. By placing an order, you agree to the terms of that policy.
             </p>
-            <ul className="text-sm text-muted leading-relaxed space-y-2 list-disc list-inside">
-              <li>
-                You may return a product within <strong>5 working days</strong> of receiving your order.
-              </li>
-              <li>
-                Products must be returned in their <strong>original, pristine condition</strong> — unused,
-                unopened, and in the same condition in which they were received, including all original packaging.
-              </li>
-              <li>
-                If the product is defective (e.g. leaking bottle, broken packaging), email us at{" "}
-                <a href="mailto:alluringscents6@gmail.com" className="accent-gold hover:underline">
-                  alluringscents6@gmail.com
-                </a>{" "}
-                with clear photographs of the defect to initiate a replacement or refund.
-              </li>
-              <li>
-                <strong>Return shipping costs</strong> are covered by Alluring Scents for all approved returns.
-                We will arrange collection or reimburse reasonable courier costs upon approval.
-              </li>
-              <li>
-                Approved refunds will be processed via <strong>EFT to your provided banking details</strong>{" "}
-                within <strong>3–5 working days</strong> of receiving the returned product in our warehouse.
-              </li>
-              <li>
-                We reserve the right to decline a return if the product shows signs of use, damage caused by
-                the customer, or is returned outside the 5 working day window.
-              </li>
-            </ul>
           </div>
 
           {/* 6 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">6. Intellectual Property</h2>
+            <h2 className="text-xl site-heading">6. Force Majeure</h2>
+            <p className="text-sm text-muted leading-relaxed">
+              We shall not be liable for any failure or delay in performing our obligations where such
+              failure or delay results from events beyond our reasonable control, including but not limited
+              to natural disasters, acts of government, strikes, civil unrest, power failures, internet
+              outages, pandemics or courier disruptions.
+            </p>
+          </div>
+
+          {/* 7 */}
+          <div className="space-y-3">
+            <h2 className="text-xl site-heading">7. Intellectual Property</h2>
             <p className="text-sm text-muted leading-relaxed">
               All content on this website — including text, images, logos, fragrance names, and design — is
               the property of Alluring Notes and is protected by applicable intellectual property laws. You
@@ -120,9 +111,9 @@ export function TermsOfUsePage() {
             </p>
           </div>
 
-          {/* 7 */}
+          {/* 8 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">7. Limitation of Liability</h2>
+            <h2 className="text-xl site-heading">8. Limitation of Liability</h2>
             <p className="text-sm text-muted leading-relaxed">
               To the fullest extent permitted by South African law, Alluring Notes shall not be liable for
               any indirect, incidental, or consequential damages arising from the use of our website or
@@ -131,29 +122,42 @@ export function TermsOfUsePage() {
             </p>
           </div>
 
-          {/* 8 */}
-          <div className="space-y-3">
-            <h2 className="text-xl site-heading">8. Governing Law</h2>
-            <p className="text-sm text-muted leading-relaxed">
-              These Terms of Use are governed by and construed in accordance with the laws of the Republic
-              of South Africa. Any disputes arising from these terms shall be subject to the jurisdiction
-              of the South African courts.
-            </p>
-          </div>
-
           {/* 9 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">9. Changes to These Terms</h2>
+            <h2 className="text-xl site-heading">9. Governing Law</h2>
             <p className="text-sm text-muted leading-relaxed">
-              We reserve the right to update these Terms of Use at any time. Changes will be posted on this
-              page with an updated effective date. Continued use of the website after changes are posted
-              constitutes your acceptance of the revised terms.
+              These Terms of Use shall be governed by, construed and take effect in accordance with the
+              laws of the Republic of South Africa. The courts of South Africa shall have exclusive
+              jurisdiction to decide any claim, dispute or matter of difference which may arise out of,
+              or in connection with, these Terms of Use.
             </p>
           </div>
 
           {/* 10 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">10. Contact Us</h2>
+            <h2 className="text-xl site-heading">10. Severability</h2>
+            <p className="text-sm text-muted leading-relaxed">
+              Each and every term contained herein is severable from the rest of these Terms of Use.
+              Should any term be in conflict with any applicable law, or be held to be unenforceable
+              or invalid for any reason whatsoever, such term shall be treated as pro non scripto and
+              shall be severable from the remaining provisions, which shall continue to be of full
+              force and effect.
+            </p>
+          </div>
+
+          {/* 11 */}
+          <div className="space-y-3">
+            <h2 className="text-xl site-heading">11. Changes to These Terms</h2>
+            <p className="text-sm text-muted leading-relaxed">
+              We reserve the right to update these Terms of Use at any time. Changes will be posted on
+              this page with an updated effective date. Continued use of the website after changes are
+              posted constitutes your acceptance of the revised terms.
+            </p>
+          </div>
+
+          {/* 12 */}
+          <div className="space-y-3">
+            <h2 className="text-xl site-heading">12. Contact Us</h2>
             <p className="text-sm text-muted leading-relaxed">
               If you have any questions about these Terms of Use, please contact us at{" "}
               <a href="mailto:alluringscents6@gmail.com" className="accent-gold hover:underline">

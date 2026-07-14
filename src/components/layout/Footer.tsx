@@ -26,6 +26,9 @@ export function Footer() {
           <Link to="/terms-of-use" className="text-xs uppercase tracking-[0.15em] footer-link">
             Terms of Use
           </Link>
+          <Link to="/returns-refunds" className="text-xs uppercase tracking-[0.15em] footer-link">
+            Returns & Refunds
+          </Link>
           <span className="text-xs text-muted">
             © {new Date().getFullYear()} Alluring Notes T/A Alluring Scents
           </span>
