@@ -1,13 +1,7 @@
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
   "routes": [
     {
-      "src": "/((?!api|assets|.*\\..*).*)",
+      "src": "/((?!api|assets|_next|.*\\..*).*)",
       "has": [
         {
           "type": "header",
@@ -16,6 +10,14 @@
         }
       ],
       "dest": "/api/og?path=/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|svg|webp|avif|ico|woff|woff2|ttf|json))",
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
