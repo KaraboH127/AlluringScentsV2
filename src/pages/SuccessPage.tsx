@@ -28,6 +28,7 @@ interface Order {
   postal_code: string;
   amount_in_cents: number;
   status: string;
+  created_at: string;
   items: OrderItem[];
 }
 
@@ -141,9 +142,16 @@ export function SuccessPage() {
                 <h1 className="text-4xl site-heading">Thank You.</h1>
                 <p className="text-lg text-muted">Your Order Has Been Received.</p>
                 {order && (
-                  <p className="text-sm text-muted">
-                    Order reference: <span className="accent-gold">{order.order_id}</span>
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted">
+                      Order reference: <span className="accent-gold">{order.order_id}</span>
+                    </p>
+                    <p className="text-xs text-muted">
+                      Placed {new Date(order.created_at).toLocaleDateString("en-ZA", {
+                        day: "numeric", month: "long", year: "numeric",
+                      })}
+                    </p>
+                  </div>
                 )}
                 {!order && orderId && (
                   <p className="text-sm text-muted">

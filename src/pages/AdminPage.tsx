@@ -107,6 +107,8 @@ export function AdminPage() {
   const [loading, setLoading]               = useState(false);
   const [search, setSearch]                 = useState("");
   const [statusFilter, setStatusFilter]     = useState(ALL);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo]     = useState("");
 
   // Products state
   const [fragrances, setFragrances]         = useState<Fragrance[]>([]);
@@ -176,19 +178,22 @@ export function AdminPage() {
   // ── Filtered orders ────────────────────────────────────────────────────────
 
   const filteredOrders = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    return orders.filter((o) => {
-      const matchesStatus = statusFilter === ALL || o.status === statusFilter;
-      const matchesSearch =
-        !q ||
-        o.order_id.toLowerCase().includes(q) ||
-        o.first_name.toLowerCase().includes(q) ||
-        o.last_name.toLowerCase().includes(q) ||
-        o.email.toLowerCase().includes(q) ||
-        o.phone.includes(q);
-      return matchesStatus && matchesSearch;
-    });
-  }, [orders, search, statusFilter]);
+  const q = search.toLowerCase().trim();
+  return orders.filter((o) => {
+    const matchesStatus = statusFilter === ALL || o.status === statusFilter;
+    const matchesSearch =
+      !q ||
+      o.order_id.toLowerCase().includes(q) ||
+      o.first_name.toLowerCase().includes(q) ||
+      o.last_name.toLowerCase().includes(q) ||
+      o.email.toLowerCase().includes(q) ||
+      o.phone.includes(q);
+    const orderDate = new Date(o.created_at);
+    const matchesFrom = !dateFrom || orderDate >= new Date(dateFrom);
+    const matchesTo   = !dateTo   || orderDate <= new Date(dateTo + "T23:59:59");
+    return matchesStatus && matchesSearch && matchesFrom && matchesTo;
+  });
+}, [orders, search, statusFilter, dateFrom, dateTo]);
 
   // ── Update order status ────────────────────────────────────────────────────
 
@@ -726,18 +731,58 @@ export function AdminPage() {
                   ))}
                 </div>
               </div>
+
+                  {/* Date range filter */}
+              <div className="flex flex-col sm:flex-row gap-3 items-center">
+                <div className="flex items-center gap-2 flex-1">
+                  <p className="text-xs text-[#666] uppercase tracking-widest whitespace-nowrap">From</p>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="flex-1 bg-[#111] border border-[#222] text-white px-3 py-2 text-sm outline-none focus:border-[#c9a84c] transition-colors"
+                  />
+                </div>
+                <div className="flex items-center gap-2 flex-1">
+                  <p className="text-xs text-[#666] uppercase tracking-widest whitespace-nowrap">To</p>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="flex-1 bg-[#111] border border-[#222] text-white px-3 py-2 text-sm outline-none focus:border-[#c9a84c] transition-colors"
+                  />
+                </div>
+                {(dateFrom || dateTo) && (
+                  <button
+                    onClick={() => { setDateFrom(""); setDateTo(""); }}
+                    className="text-xs text-[#c9a84c] hover:text-white transition-colors whitespace-nowrap"
+                  >
+                    Clear dates
+                  </button>
+                )}
+              </div>
+
               <p className="text-xs text-[#555]">
                 {filteredOrders.length} {filteredOrders.length === 1 ? "order" : "orders"}
                 {statusFilter !== ALL && ` · ${statusFilter}`}
                 {search && ` · "${search}"`}
+                {dateFrom && ` · from ${new Date(dateFrom).toLocaleDateString("en-ZA")}`}
+                {dateTo && ` · to ${new Date(dateTo).toLocaleDateString("en-ZA")}`}
               </p>
               {filteredOrders.length === 0 ? (
                 <div className="border border-[#1a1a1a] p-8 text-center">
                   <p className="text-[#666] text-sm">No orders match your search.</p>
-                  <button onClick={() => { setSearch(""); setStatusFilter(ALL); }}
-                    className="mt-3 text-xs text-[#c9a84c] hover:text-white transition-colors">
+                  <button
+                    onClick={() => {
+                      setSearch("");
+                      setStatusFilter(ALL);
+                      setDateFrom("");
+                      setDateTo("");
+                    }}
+                    className="mt-3 text-xs text-[#c9a84c] hover:text-white transition-colors"
+                  >
                     Clear filters
-                  </button>
+                </button>
                 </div>
               ) : (
                 filteredOrders.map((order) => (

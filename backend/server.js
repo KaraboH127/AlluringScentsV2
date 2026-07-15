@@ -211,6 +211,9 @@ app.post("/webhook", async (req, res) => {
             <td style="padding: 24px 0 8px;">
               <p style="margin: 0; font-size: 12px; color: #666666; letter-spacing: 1px; text-transform: uppercase;">Order Reference</p>
               <p style="margin: 4px 0 0; font-size: 20px; color: #c9a84c; letter-spacing: 2px;">${metadata.orderId}</p>
+              <p style="margin: 4px 0 0; font-size: 12px; color: #666666;">
+                ${new Date().toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" })}
+              </p>
             </td>
           </tr>
           <tr><td style="padding: 8px 0;"><hr style="border: none; border-top: 1px solid #2a2a2a;" /></td></tr>
