@@ -96,9 +96,6 @@ export function CollectionsPage() {
 
                     {/* CTAs */}
                     <div className="flex flex-wrap gap-3">
-                      <Link to={`/fragrance/${items[0]?.slug}`}>
-                        <Button>Explore Collection</Button>
-                      </Link>
                       <Link to="/pricing">
                         <Button variant="ghost">View Pricing</Button>
                       </Link>
