@@ -1,36 +1,40 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Fragrance, SizeOption } from "../../types/site";
 import { collections, formatCurrency } from "../../config/site";
 import { Badge } from "../ui/Badge";
 import { Image } from "../ui/Image";
-import { Skeleton } from "../ui/Skeleton";
-
-function isImageCached(src: string): boolean {
-  const img = new window.Image();
-  img.src = src;
-  return img.complete;
-}
 
 export function FragranceHero({ fragrance, selectedSize }: { fragrance: Fragrance; selectedSize: SizeOption }) {
   const collection = collections.find((entry) => entry.id === fragrance.collection)!;
-  const [imageLoaded, setImageLoaded] = useState(() => isImageCached(fragrance.image));
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (!isImageCached(fragrance.image)) {
-      setImageLoaded(false);
-    }
+    setImageLoaded(false);
+
+    // Give browser one tick — if image is cached it fires onLoad
+    // before paint, so we check the ref directly
+    const timer = setTimeout(() => {
+      if (imgRef.current?.complete) {
+        setImageLoaded(true);
+      }
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [fragrance.image]);
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
-      <div className="relative overflow-hidden">
-        {!imageLoaded && <Skeleton className="h-[420px] w-full" />}
+      <div className="relative overflow-hidden bg-[#f5f5f5] h-[420px]">
         <Image
           src={fragrance.image}
           alt={fragrance.name}
-          className={`h-[420px] w-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+          className={`h-[420px] w-full object-cover transition-opacity duration-500 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
           priority
           onLoad={() => setImageLoaded(true)}
+          ref={imgRef}
         />
       </div>
       <div className="space-y-5">
