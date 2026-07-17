@@ -5,18 +5,20 @@ import { Badge } from "../ui/Badge";
 import { Image } from "../ui/Image";
 import { Skeleton } from "../ui/Skeleton";
 
-/**
- * Top-of-page product header for fragrance detail routes.
- *
- * Receives selected size from page state so pricing updates without mutating
- * global state.
- */
+function isImageCached(src: string): boolean {
+  const img = new window.Image();
+  img.src = src;
+  return img.complete;
+}
+
 export function FragranceHero({ fragrance, selectedSize }: { fragrance: Fragrance; selectedSize: SizeOption }) {
   const collection = collections.find((entry) => entry.id === fragrance.collection)!;
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(() => isImageCached(fragrance.image));
 
   useEffect(() => {
-    setImageLoaded(false);
+    if (!isImageCached(fragrance.image)) {
+      setImageLoaded(false);
+    }
   }, [fragrance.image]);
 
   return (
@@ -26,7 +28,7 @@ export function FragranceHero({ fragrance, selectedSize }: { fragrance: Fragranc
         <Image
           src={fragrance.image}
           alt={fragrance.name}
-          className={`h-[420px] w-full object-cover ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+          className={`h-[420px] w-full object-cover transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
           priority
           onLoad={() => setImageLoaded(true)}
         />
