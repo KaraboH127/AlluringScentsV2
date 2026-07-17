@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
 import { SEOHead } from "../SEOHead";
-import { PricingTable } from "../components/fragrance/PricingTable";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
-import { Skeleton } from "../components/ui/Skeleton";
+import { Image } from "../components/ui/Image";
 import { collections, fragrances } from "../config/site";
 
 export function CollectionsPage() {
@@ -15,56 +14,101 @@ export function CollectionsPage() {
         path="/collections"
       />
 
+      {/* Hero intro */}
       <Section>
-        <h1 className="mb-10 text-4xl site-heading md:text-5xl">Collections</h1>
-        <div className="space-y-12">
-          {collections.length > 0 ? collections.map((collection) => {
-            const items = fragrances.filter((fragrance) => fragrance.collection === collection.id);
+        <div className="max-w-2xl space-y-3 mb-16">
+          <h1 className="text-4xl site-heading md:text-5xl">Collections</h1>
+          <p className="text-sm text-muted leading-relaxed">
+            Two collections. One for everyday elegance, one for those who leave a mark.
+            Find the fragrance that speaks your identity.
+          </p>
+        </div>
+
+        <div className="space-y-24">
+          {collections.map((collection, index) => {
+            const items = fragrances.filter((f) => f.collection === collection.id);
+            const featured = items.slice(0, 3);
+            const isReversed = index % 2 !== 0;
+
             return (
-              <article key={collection.id} className="grid gap-8 border panel-surface p-6 lg:grid-cols-[1.5fr_1fr]">
-                <div className="space-y-5">
-                  <p className="text-xs uppercase tracking-[0.2em] accent-gold">{collection.name}</p>
-                  <h2 className="text-3xl site-heading">{collection.tagline}</h2>
-                  <p className="max-w-2xl text-muted">{collection.description}</p>
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {items.map((fragrance) => (
-                      <Link key={fragrance.id} to={`/fragrance/${fragrance.slug}`} className="border px-3 py-2 text-xs uppercase tracking-[0.14em] text-muted hover:accent-gold">
-                        {fragrance.name}
+              <article key={collection.id} className="space-y-10">
+
+                {/* Collection header */}
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b pb-6">
+                  <div className="space-y-2">
+                    <p className="text-xs uppercase tracking-[0.2em] accent-gold">{collection.name}</p>
+                    <h2 className="text-3xl site-heading">{collection.tagline}</h2>
+                  </div>
+                  <p className="text-xs uppercase tracking-widest text-muted">
+                    {items.length} Fragrances
+                  </p>
+                </div>
+
+                {/* Featured images + description */}
+                <div className={`grid gap-6 lg:grid-cols-2 lg:items-center ${isReversed ? "lg:[direction:rtl]" : ""}`}>
+
+                  {/* Featured fragrance images */}
+                  <div className={`grid grid-cols-3 gap-3 ${isReversed ? "lg:[direction:ltr]" : ""}`}>
+                    {featured.map((f) => (
+                      <Link key={f.id} to={`/fragrance/${f.slug}`} className="group space-y-2">
+                        <div className="overflow-hidden bg-[#f5f5f5]">
+                          <Image
+                            src={f.image}
+                            alt={f.name}
+                            className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
+                        <p className="text-xs uppercase tracking-widest text-muted group-hover:accent-gold transition-colors text-center">
+                          {f.name}
+                        </p>
                       </Link>
                     ))}
                   </div>
+
+                  {/* Description + actions */}
+                  <div className={`space-y-6 ${isReversed ? "lg:[direction:ltr]" : ""}`}>
+                    <p className="text-base leading-relaxed text-muted">{collection.description}</p>
+
+                    {/* All fragrance pills */}
+                    <div className="space-y-2">
+                      <p className="text-xs uppercase tracking-widest text-muted">All Fragrances</p>
+                      <div className="flex flex-wrap gap-2">
+                        {items.map((f) => (
+                          <Link
+                            key={f.id}
+                            to={`/fragrance/${f.slug}`}
+                            className="border px-3 py-1.5 text-xs uppercase tracking-widest text-muted hover:accent-gold hover:border-[#c9a84c] transition-colors"
+                          >
+                            {f.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Starting price */}
+                    <p className="text-sm text-muted">
+                      Starting from{" "}
+                      <span className="accent-gold">
+                        R{collection.prices["10ml"]}
+                      </span>
+                      {" "}· Available in 10ml, 50ml & 100ml
+                    </p>
+
+                    {/* CTAs */}
+                    <div className="flex flex-wrap gap-3">
+                      <Link to={`/fragrance/${items[0]?.slug}`}>
+                        <Button>Explore Collection</Button>
+                      </Link>
+                      <Link to="/pricing">
+                        <Button variant="ghost">View Pricing</Button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  <p className="text-sm uppercase tracking-[0.14em] text-muted">Pricing</p>
-                  <PricingTable collection={collection} />
-                  <Link to="/pricing">
-                    <Button variant="ghost" className="w-full">
-                      View Full Pricing
-                    </Button>
-                  </Link>
-                </div>
+
               </article>
             );
-          }) : Array.from({ length: 2 }).map((_, index) => (
-            <div key={index} className="grid gap-8 border panel-surface p-6 lg:grid-cols-[1.5fr_1fr]">
-              <div className="space-y-5">
-                <Skeleton className="h-3 w-28" />
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {Array.from({ length: 4 }).map((_, chipIndex) => (
-                    <Skeleton key={chipIndex} className="h-8 w-24" />
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-4">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-40 w-full" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            </div>
-          ))}
+          })}
         </div>
       </Section>
     </>
