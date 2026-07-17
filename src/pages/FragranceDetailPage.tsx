@@ -5,6 +5,7 @@ import { FragranceHero } from "../components/fragrance/FragranceHero";
 import { FragranceNotes } from "../components/fragrance/FragranceNotes";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
+import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { QuantitySelector } from "../components/ui/QuantitySelector";
 import { Select } from "../components/ui/Select";
 import { Skeleton } from "../components/ui/Skeleton";
@@ -24,15 +25,12 @@ export function FragranceDetailPage() {
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
 
-  // ── Fetch stock for this fragrance ─────────────────────────────────────────
-
   useEffect(() => {
     if (!fragrance) return;
     setStockLoading(true);
     fetch(`${API}/stock/${fragrance.id}`)
       .then((r) => r.json())
       .then((data) => {
-        // data is an array of { size, stock }
         const map: Record<string, number> = {};
         if (Array.isArray(data)) {
           data.forEach((row: { size: string; stock: number }) => {
@@ -89,6 +87,13 @@ export function FragranceDetailPage() {
       />
 
       <Section>
+        <Breadcrumb
+          items={[
+            { name: "Home", path: "/" },
+            { name: "Collections", path: "/collections" },
+            { name: fragrance.name, path: `/fragrance/${fragrance.slug}` },
+          ]}
+        />
         <FragranceHero fragrance={fragrance} selectedSize={size} />
       </Section>
 
