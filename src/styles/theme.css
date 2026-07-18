@@ -17,7 +17,7 @@
 }
 
 body {
-  font-family: "Times New Roman", "Georgia", serif;
+  font-family: "Cormorant Garant", "Times New Roman", "Georgia", serif;
   background: var(--color-bg);
   color: var(--color-text);
 }
@@ -125,7 +125,9 @@ hr, .divider {
 
 /* General utilities */
 .site-heading {
-  color: var(--color-text);
+  font-family: "Cormorant Garant", "Times New Roman", "Georgia", serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 .accent-gold {
   color: var(--color-gold);

@@ -5,7 +5,6 @@ import { CollectionGrid } from "../components/fragrance/CollectionGrid";
 import { Section } from "../components/layout/Section";
 import { Image } from "../components/ui/Image";
 import { Button } from "../components/ui/Button";
-import { Skeleton } from "../components/ui/Skeleton";
 import { collections, featuredFragrances, fragrances, homeWhyChoose, siteConfig } from "../config/site";
 import { organizationSchema } from "../utils/seo";
 
@@ -21,63 +20,85 @@ export function HomePage() {
         schema={organizationSchema()}
       />
 
-      {/* ── Hero ──────────────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden section-surface">
-        <Skeleton className="absolute inset-0 h-full w-full" />
-        <Image
-          src={siteConfig.images.hero}
-          alt="Luxury fragrance hero"
+      {/* ── Hero — Video ──────────────────────────────────────────────────────── */}
+      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden">
+        {/* Video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           className="absolute inset-0 h-full w-full object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-white/95" />
-        <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.8fr)_1fr]">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="space-y-7"
-          >
-            <p className="text-xs uppercase tracking-[0.24em] accent-gold">South Africa • Est. 2024 • Premium Fragrances</p>
-            <h1 className="text-5xl leading-tight site-heading md:text-7xl">Alluring Scents</h1>
-            <p className="text-sm uppercase tracking-[0.3em] text-muted">Savour the seduction</p>
-            <p className="max-w-xl text-base text-muted md:text-lg">
-              A perfume house with a sharper point of view: rich blends, clean presentation, and a signature trail that lingers long after the room forgets everything else.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/collections"><Button>Shop Collection</Button></Link>
-              <Link to="/our-story"><Button variant="secondary">Explore Our Story</Button></Link>
-            </div>
-          </motion.div>
+        >
+          <source src="/Hero-Video.mp4" type="video/mp4" />
+        </video>
 
+        {/* Dark overlay — lets text breathe */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+
+        {/* Content */}
+        <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col justify-end px-4 pb-16 sm:px-6 sm:pb-24">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="grid gap-5"
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="max-w-3xl space-y-6"
           >
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-muted">Current Edit</p>
-            </div>
-            <div className="border border-white/40 bg-white/30 p-8 shadow-lg shadow-black/10 backdrop-blur-xl backdrop-saturate-150">
-              <p className="text-xs uppercase tracking-[0.24em] accent-gold">Signature Collection</p>
-              <h2 className="mt-4 text-3xl leading-tight md:text-4xl">
-                Scents curated to feel magnetic, modern, and unmistakably yours.
-              </h2>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="border border-white/40 bg-white/25 p-6 shadow-sm shadow-black/10 backdrop-blur-xl backdrop-saturate-150">
-                <p className="text-xl font-semibold">01</p>
-                <p className="mt-4 text-sm text-muted">Luxury blends built for presence, memory, and mood.</p>
-              </div>
-              <div className="border border-white/40 bg-white/25 p-6 shadow-sm shadow-black/10 backdrop-blur-xl backdrop-saturate-150">
-                <p className="text-xl font-semibold">ZA</p>
-                <p className="mt-4 text-sm text-muted">Curated in South Africa with a cleaner, fashion-led point of view.</p>
-              </div>
+            <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+              South Africa · Est. 2024 · Premium Fragrances
+            </p>
+            <h1 className="text-5xl leading-[1.05] text-white site-heading md:text-7xl lg:text-8xl">
+              Alluring Scents
+            </h1>
+            <p className="text-sm uppercase tracking-[0.3em] text-white/50">
+              Savour the seduction
+            </p>
+            <p className="max-w-xl text-base text-white/70 md:text-lg leading-relaxed">
+              A perfume house with a sharper point of view — rich blends, clean
+              presentation, and a signature trail that lingers long after the room
+              forgets everything else.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link to="/collections">
+                <Button>Shop Collection</Button>
+              </Link>
+              <Link to="/our-story">
+                <button className="px-6 py-3 text-xs uppercase tracking-[0.16em] text-white/70 border border-white/30 hover:border-white/60 hover:text-white transition-colors">
+                  Our Story
+                </button>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
+
+      {/* ── Marquee — Sensory strip ───────────────────────────────────────────── */}
+      <div className="border-y border-[var(--color-border)] overflow-hidden py-3 section-surface">
+        <motion.div
+          className="flex gap-12 whitespace-nowrap"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        >
+          {[
+            "Extrait de Parfum",
+            "Long-Lasting Sillage",
+            "Crafted in South Africa",
+            "Standard Collection",
+            "Private Collection",
+            "Luxury Without Compromise",
+            "Extrait de Parfum",
+            "Long-Lasting Sillage",
+            "Crafted in South Africa",
+            "Standard Collection",
+            "Private Collection",
+            "Luxury Without Compromise",
+          ].map((text, i) => (
+            <span key={i} className="text-xs uppercase tracking-[0.2em] text-muted">
+              {text} <span className="accent-gold mx-4">·</span>
+            </span>
+          ))}
+        </motion.div>
+      </div>
 
       {/* ── Our Story ─────────────────────────────────────────────────────────── */}
       <Section>
@@ -86,14 +107,19 @@ export function HomePage() {
             <Image
               src={siteConfig.images.collection}
               alt="Alluring Scents story"
-              className="h-[420px] w-full object-cover"
+              className="h-[480px] w-full object-cover"
             />
           </div>
-          <div className="space-y-5">
+          <div className="space-y-6">
             <p className="text-xs uppercase tracking-[0.24em] accent-gold">Our Story</p>
-            <h2 className="text-3xl site-heading md:text-4xl">Born from a conversation about identity.</h2>
+            <h2 className="text-3xl site-heading md:text-4xl leading-tight">
+              Born from a conversation<br />about identity.
+            </h2>
             <p className="leading-relaxed text-muted">
-              Founded in 2024 by Thato Padi and Katlego Kennedy, Alluring Scents was born from a conversation about fragrance, identity, and creating something timeless. That conversation evolved into a fragrance house dedicated to making luxury perfume accessible without compromising quality.
+              Founded in 2024 by Thato Padi and Katlego Kennedy, Alluring Scents was born
+              from a conversation about fragrance, identity, and creating something timeless.
+              That conversation evolved into a fragrance house dedicated to making luxury
+              perfume accessible without compromising quality.
             </p>
             <Link to="/our-story">
               <Button variant="ghost">Read Our Story</Button>
@@ -147,8 +173,8 @@ export function HomePage() {
           </Link>
         </div>
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
@@ -166,9 +192,9 @@ export function HomePage() {
         <div className="mx-auto max-w-6xl space-y-10">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div className="space-y-4">
-              <p className="text-xs uppercase tracking-[0.24em] accent-gold">Why choose Alluring Scents</p>
-              <h2 className="text-3xl site-heading md:text-4xl">
-                A fragrance house designed for presence, longevity, and personal expression.
+              <p className="text-xs uppercase tracking-[0.24em] accent-gold">Why Alluring Scents</p>
+              <h2 className="text-3xl site-heading md:text-4xl leading-tight">
+                Designed for presence, longevity, and personal expression.
               </h2>
               <Link to="/collections">
                 <Button className="mt-2">Shop Now</Button>
@@ -178,7 +204,7 @@ export function HomePage() {
               {homeWhyChoose.map((item) => (
                 <div
                   key={item}
-                  className="border border-white/40 bg-white/30 p-5 shadow-sm shadow-black/10 backdrop-blur-xl backdrop-saturate-150"
+                  className="border border-[var(--color-border)] p-5"
                 >
                   <p className="text-sm text-muted">{item}</p>
                 </div>
@@ -190,15 +216,33 @@ export function HomePage() {
 
       {/* ── Final CTA ─────────────────────────────────────────────────────────── */}
       <Section>
-        <div className="mx-auto max-w-5xl border border-white/40 bg-white/30 p-8 text-center shadow-lg shadow-black/10 backdrop-blur-xl backdrop-saturate-150 sm:p-10">
-          <p className="text-xs uppercase tracking-[0.24em] accent-gold">Begin your signature</p>
-          <h2 className="mt-4 text-3xl site-heading md:text-4xl">Luxury begins with your signature scent.</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-muted">
-            Discover the collection and find the fragrance that fits your rhythm, your style, and the impression you want to leave.
-          </p>
-          <Link to="/collections" className="mt-6 inline-block">
-            <Button>Shop Collection</Button>
-          </Link>
+        <div className="relative overflow-hidden">
+          <Image
+            src={siteConfig.images.collection}
+            alt="Alluring Scents collection"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="relative px-8 py-20 text-center space-y-6 sm:py-28">
+            <p className="text-xs uppercase tracking-[0.3em] text-white/60">Begin your signature</p>
+            <h2 className="text-3xl site-heading md:text-5xl text-white leading-tight">
+              Luxury begins with<br />your signature scent.
+            </h2>
+            <p className="mx-auto max-w-xl text-base text-white/60 leading-relaxed">
+              Discover the collection and find the fragrance that fits your rhythm,
+              your style, and the impression you want to leave.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
+              <Link to="/collections">
+                <Button>Shop Collection</Button>
+              </Link>
+              <Link to="/journal">
+                <button className="px-6 py-3 text-xs uppercase tracking-[0.16em] text-white/70 border border-white/30 hover:border-white/60 hover:text-white transition-colors">
+                  Read Journal
+                </button>
+              </Link>
+            </div>
+          </div>
         </div>
       </Section>
     </>
