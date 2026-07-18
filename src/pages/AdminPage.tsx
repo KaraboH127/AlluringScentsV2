@@ -96,7 +96,8 @@ const emptyForm = {
 export function AdminPage() {
   const [token, setToken]                   = useState(() => sessionStorage.getItem("admin_token") ?? "");
   const [password, setPassword]             = useState("");
-  const [loginError, setLoginError]         = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
   const [tab, setTab]                       = useState<"orders" | "inventory" | "products">("orders");
   const [orders, setOrders]                 = useState<Order[]>([]);
   const [inventory, setInventory]           = useState<InventoryItem[]>([]);
@@ -128,17 +129,19 @@ export function AdminPage() {
   // ── Login ──────────────────────────────────────────────────────────────────
 
   const handleLogin = async () => {
-    setLoginError("");
-    const res  = await fetch(`${API}/admin/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setLoginError(data.error || "Invalid password."); return; }
-    sessionStorage.setItem("admin_token", data.token);
-    setToken(data.token);
-  };
+  setLoginError("");
+  setLoginLoading(true);
+  const res = await fetch(`${API}/admin/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  const data = await res.json();
+  setLoginLoading(false);
+  if (!res.ok) { setLoginError(data.error || "Invalid password."); return; }
+  sessionStorage.setItem("admin_token", data.token);
+  setToken(data.token);
+};
 
   // ── Fetch dashboard data ───────────────────────────────────────────────────
 
@@ -367,20 +370,46 @@ export function AdminPage() {
             <p className="text-xs text-[#666] tracking-widest uppercase">Admin Access</p>
           </div>
           <div className="space-y-3">
-            <input
+           <input
               type="password"
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-              className="w-full bg-[#111] border border-[#222] text-white px-4 py-3 text-sm outline-none focus:border-[#c9a84c] transition-colors"
+              onKeyDown={(e) => e.key === "Enter" && !loginLoading && handleLogin()}
+              disabled={loginLoading}
+              className="w-full bg-[#111] border border-[#222] text-white px-4 py-3 text-sm outline-none focus:border-[#c9a84c] transition-colors disabled:opacity-50"
             />
             {loginError && <p className="text-red-400 text-xs">{loginError}</p>}
             <button
               onClick={handleLogin}
-              className="w-full bg-[#c9a84c] text-black py-3 text-sm font-semibold tracking-widest uppercase hover:bg-[#b8973b] transition-colors"
+              disabled={loginLoading}
+              className="w-full bg-[#c9a84c] text-black py-3 text-sm font-semibold tracking-widest uppercase hover:bg-[#b8973b] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              Enter
+              {loginLoading ? (
+                <>
+                  <svg
+                    className="animate-spin h-4 w-4 text-black"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12" cy="12" r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    />
+                  </svg>
+                  Verifying...
+                </>
+              ) : (
+                "Enter"
+              )}
             </button>
           </div>
         </div>
