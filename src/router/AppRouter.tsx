@@ -21,7 +21,7 @@ export function AppRouter() {
   return (
     <Routes>
       {/* Admin — no layout */}
-      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/internal" element={<AdminPage />} />
 
       {/* Main site — wrapped in layout */}
       <Route
