@@ -8,12 +8,13 @@ const { Resend } = require("resend");
 
 const app = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
+const { generateInvoice } = require("./invoice");
 
 // ─── Supabase ─────────────────────────────────────────────────────────────────
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
@@ -24,7 +25,7 @@ app.use(
   cors({
     origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PATCH"],
-  })
+  }),
 );
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ app.post("/create-checkout", async (req, res) => {
           Authorization: `Bearer ${process.env.YOCO_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     const { id, redirectUrl } = response.data;
@@ -159,7 +160,9 @@ app.post("/webhook", async (req, res) => {
     // ── Send confirmation email ───────────────────────────────────────────────
     const formatCurrency = (cents) => `R${(cents / 100).toFixed(2)}`;
 
-    const itemRows = items.map((item) => `
+    const itemRows = items
+      .map(
+        (item) => `
       <tr>
         <td style="padding: 12px 0; border-bottom: 1px solid #2a2a2a;">
           <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -176,7 +179,9 @@ app.post("/webhook", async (req, res) => {
           </table>
         </td>
       </tr>
-    `).join("");
+    `,
+      )
+      .join("");
 
     const emailHtml = `
 <!DOCTYPE html>
@@ -274,11 +279,28 @@ app.post("/webhook", async (req, res) => {
 </body>
 </html>`;
 
+    const pdfBuffer = await generateInvoice({
+      ...metadata,
+      order_id: metadata.orderId,
+      first_name: metadata.firstName,
+      last_name: metadata.lastName,
+      amount_in_cents: amount,
+      items,
+      created_at: new Date().toISOString(),
+      status: "succeeded",
+    });
+
     const { error: emailError } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: metadata.email,
       subject: `Order Confirmed — ${metadata.orderId} | Alluring Scents`,
       html: emailHtml,
+      attachments: [
+        {
+          filename: `receipt-${metadata.orderId}.pdf`,
+          content: pdfBuffer.toString("base64"),
+        },
+      ],
     });
 
     if (emailError) {
@@ -345,11 +367,10 @@ app.post("/admin/login", async (req, res) => {
     return res.status(500).json({ error: "Admin config not found." });
   }
 
-  const { data: match } = await supabase
-    .rpc("verify_password", {
-      password,
-      hash: data.password_hash,
-    });
+  const { data: match } = await supabase.rpc("verify_password", {
+    password,
+    hash: data.password_hash,
+  });
 
   if (!match) {
     return res.status(401).json({ error: "Invalid password." });
@@ -483,7 +504,8 @@ app.get("/fragrances", async (req, res) => {
     .eq("active", true)
     .order("created_at");
 
-  if (error) return res.status(500).json({ error: "Failed to fetch fragrances." });
+  if (error)
+    return res.status(500).json({ error: "Failed to fetch fragrances." });
   res.json(data);
 });
 
@@ -495,7 +517,8 @@ app.get("/fragrances/:slug", async (req, res) => {
     .eq("active", true)
     .single();
 
-  if (error || !data) return res.status(404).json({ error: "Fragrance not found." });
+  if (error || !data)
+    return res.status(404).json({ error: "Fragrance not found." });
   res.json(data);
 });
 
@@ -506,7 +529,8 @@ app.get("/collections", async (req, res) => {
     .eq("active", true)
     .order("created_at");
 
-  if (error) return res.status(500).json({ error: "Failed to fetch collections." });
+  if (error)
+    return res.status(500).json({ error: "Failed to fetch collections." });
   res.json(data);
 });
 
@@ -518,14 +542,24 @@ app.get("/admin/fragrances", requireAdmin, async (req, res) => {
     .select("*, collection:collections(*)")
     .order("created_at");
 
-  if (error) return res.status(500).json({ error: "Failed to fetch fragrances." });
+  if (error)
+    return res.status(500).json({ error: "Failed to fetch fragrances." });
   res.json(data);
 });
 
 app.post("/admin/fragrances", requireAdmin, async (req, res) => {
   const {
-    id, slug, name, collection_id, description, extrait,
-    notes, best_for, occasions, personality, image_url,
+    id,
+    slug,
+    name,
+    collection_id,
+    description,
+    extrait,
+    notes,
+    best_for,
+    occasions,
+    personality,
+    image_url,
   } = req.body;
 
   if (!id || !slug || !name || !collection_id || !image_url) {
@@ -534,8 +568,17 @@ app.post("/admin/fragrances", requireAdmin, async (req, res) => {
 
   // Create fragrance
   const { error: fragError } = await supabase.from("fragrances").insert({
-    id, slug, name, collection_id, description, extrait,
-    notes, best_for, occasions, personality, image_url,
+    id,
+    slug,
+    name,
+    collection_id,
+    description,
+    extrait,
+    notes,
+    best_for,
+    occasions,
+    personality,
+    image_url,
     active: true,
   });
 
@@ -551,7 +594,9 @@ app.post("/admin/fragrances", requireAdmin, async (req, res) => {
     stock: 0,
   }));
 
-  const { error: invError } = await supabase.from("inventory").insert(inventoryRows);
+  const { error: invError } = await supabase
+    .from("inventory")
+    .insert(inventoryRows);
   if (invError) console.error("Inventory auto-create error:", invError.message);
 
   res.json({ success: true });
@@ -566,7 +611,8 @@ app.patch("/admin/fragrances/:id", requireAdmin, async (req, res) => {
     .update(updates)
     .eq("id", id);
 
-  if (error) return res.status(500).json({ error: "Failed to update fragrance." });
+  if (error)
+    return res.status(500).json({ error: "Failed to update fragrance." });
   res.json({ success: true });
 });
 
@@ -591,7 +637,8 @@ app.get("/admin/collections", requireAdmin, async (req, res) => {
     .select("*")
     .order("created_at");
 
-  if (error) return res.status(500).json({ error: "Failed to fetch collections." });
+  if (error)
+    return res.status(500).json({ error: "Failed to fetch collections." });
   res.json(data);
 });
 
@@ -603,7 +650,13 @@ app.post("/admin/collections", requireAdmin, async (req, res) => {
   }
 
   const { error } = await supabase.from("collections").insert({
-    id, name, label, tagline, description, prices, active: true,
+    id,
+    name,
+    label,
+    tagline,
+    description,
+    prices,
+    active: true,
   });
 
   if (error) return res.status(500).json({ error: error.message });
@@ -619,7 +672,8 @@ app.patch("/admin/collections/:id", requireAdmin, async (req, res) => {
     .update(updates)
     .eq("id", id);
 
-  if (error) return res.status(500).json({ error: "Failed to update collection." });
+  if (error)
+    return res.status(500).json({ error: "Failed to update collection." });
   res.json({ success: true });
 });
 
@@ -646,6 +700,64 @@ app.post("/admin/upload-image", requireAdmin, async (req, res) => {
     .getPublicUrl(filePath);
 
   res.json({ url: data.publicUrl });
+});
+
+// ─── Admin — Download Invoice ─────────────────────────────────────────────────
+
+app.get("/admin/orders/:orderId/invoice", requireAdmin, async (req, res) => {
+  const { orderId } = req.params;
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("order_id", orderId)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ error: "Order not found." });
+  }
+
+  try {
+    const pdfBuffer = await generateInvoice(data);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="invoice-${orderId}.pdf"`,
+    );
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error("Invoice generation error:", err.message);
+    res.status(500).json({ error: "Could not generate invoice." });
+  }
+});
+
+// ─── Public — Customer Receipt ────────────────────────────────────────────────
+
+app.get("/order/:orderId/receipt", async (req, res) => {
+  const { orderId } = req.params;
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("order_id", orderId)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ error: "Order not found." });
+  }
+
+  try {
+    const pdfBuffer = await generateInvoice(data);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="receipt-${orderId}.pdf"`,
+    );
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error("Receipt generation error:", err.message);
+    res.status(500).json({ error: "Could not generate receipt." });
+  }
 });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
