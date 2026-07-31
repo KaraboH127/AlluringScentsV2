@@ -1,15 +1,28 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../config/site";
 import { useCart } from "../../store/CartContext";
 import { Button } from "../ui/Button";
+import { Skeleton } from "../ui/Skeleton";
 
-/**
- * Cart totals and checkout actions for the dedicated cart page.
- *
- * Keeps pricing presentation separate from line-item rendering.
- */
+const API = import.meta.env.VITE_API_URL;
+
 export function CartSummary() {
   const { subtotal } = useCart();
+  const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
+  const [deliveryLoading, setDeliveryLoading]   = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/settings/delivery-fee`)
+      .then((r) => r.json())
+      .then((data) => setDeliveryFeeCents(data.deliveryFeeCents ?? 9500))
+      .catch(() => setDeliveryFeeCents(9500))
+      .finally(() => setDeliveryLoading(false));
+  }, []);
+
+  const deliveryFee = subtotal > 0 ? deliveryFeeCents / 100 : 0;
+  const total       = subtotal + deliveryFee;
+
   return (
     <div className="space-y-5 border p-6">
       <h3 className="text-lg site-heading">Order Summary</h3>
@@ -20,16 +33,24 @@ export function CartSummary() {
         </div>
         <div className="flex justify-between">
           <span>Delivery</span>
-          <span>{subtotal > 0 ? formatCurrency(95) : formatCurrency(0)}</span>
+          {deliveryLoading
+            ? <Skeleton className="h-4 w-16" />
+            : <span>{formatCurrency(deliveryFee)}</span>
+          }
         </div>
         <div className="flex justify-between border-t pt-2 text-base accent-gold">
           <span>Total</span>
-          <span>{formatCurrency(subtotal > 0 ? subtotal + 95 : 0)}</span>
+          {deliveryLoading
+            ? <Skeleton className="h-5 w-20" />
+            : <span>{formatCurrency(total)}</span>
+          }
         </div>
       </div>
       <div className="space-y-3">
         <Link to="/checkout">
-          <Button className="w-full">Proceed To Checkout</Button>
+          <Button className="w-full" disabled={deliveryLoading}>
+            Proceed To Checkout
+          </Button>
         </Link>
         <Link to="/collections">
           <Button variant="ghost" className="w-full">
