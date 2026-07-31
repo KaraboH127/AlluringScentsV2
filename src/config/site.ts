@@ -275,7 +275,14 @@ export const fragrances: Fragrance[] = [
   },
 ];
 
-export const featuredFragrances = ["9-lives", "golden-amber", "lush", "whiskey-sour"];
+export const featuredFragrances = [
+  "9-lives",
+  "golden-amber", 
+  "lush",
+  "whiskey-sour",
+  "taboo",
+  "midnight-oud",
+];
 
 export const homeWhyChoose = [
   "Luxury Ingredients",
