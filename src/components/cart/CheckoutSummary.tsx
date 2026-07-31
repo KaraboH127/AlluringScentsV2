@@ -1,9 +1,16 @@
 import { formatCurrency } from "../../config/site";
 import { useCart } from "../../store/CartContext";
+import { Skeleton } from "../ui/Skeleton";
 
-export function CheckoutSummary() {
+interface CheckoutSummaryProps {
+  deliveryFee: number;
+  deliveryLoading: boolean;
+}
+
+export function CheckoutSummary({ deliveryFee, deliveryLoading }: CheckoutSummaryProps) {
   const { subtotal } = useCart();
-  const delivery = subtotal > 0 ? 95 : 0;
+  const delivery = subtotal > 0 ? deliveryFee : 0;
+
   return (
     <div className="space-y-4 border p-6">
       <h3 className="text-lg site-heading">Order Summary</h3>
@@ -14,11 +21,17 @@ export function CheckoutSummary() {
         </div>
         <div className="flex justify-between">
           <span>Delivery</span>
-          <span>{formatCurrency(delivery)}</span>
+          {deliveryLoading
+            ? <Skeleton className="h-4 w-16" />
+            : <span>{formatCurrency(delivery)}</span>
+          }
         </div>
         <div className="flex justify-between border-t pt-2 text-base accent-gold">
           <span>Total</span>
-          <span>{formatCurrency(subtotal + delivery)}</span>
+          {deliveryLoading
+            ? <Skeleton className="h-5 w-20" />
+            : <span>{formatCurrency(subtotal + delivery)}</span>
+          }
         </div>
       </div>
     </div>

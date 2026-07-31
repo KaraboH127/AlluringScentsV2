@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { SEOHead } from "../SEOHead";
 import { CheckoutSummary } from "../components/cart/CheckoutSummary";
 import { Section } from "../components/layout/Section";
@@ -11,64 +11,73 @@ import { fragrances } from "../config/site";
 const API = import.meta.env.VITE_API_URL;
 
 export function CheckoutPage() {
-  const { items, subtotal } = useCart();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { items, subtotal }                     = useCart();
+  const [loading, setLoading]                   = useState(false);
+  const [error, setError]                       = useState<string | null>(null);
+  const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
+  const [deliveryLoading, setDeliveryLoading]   = useState(true);
 
-  const delivery = subtotal > 0 ? 95 : 0;
-  const total = subtotal + delivery;
+  // Fetch live delivery fee
+  useEffect(() => {
+    fetch(`${API}/settings/delivery-fee`)
+      .then((r) => r.json())
+      .then((data) => {
+        setDeliveryFeeCents(data.deliveryFeeCents ?? 9500);
+      })
+      .catch(() => setDeliveryFeeCents(9500))
+      .finally(() => setDeliveryLoading(false));
+  }, []);
+
+  const deliveryFee = subtotal > 0 ? deliveryFeeCents / 100 : 0;
+  const total       = subtotal + deliveryFee;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
 
-    const form = event.currentTarget;
+    const form    = event.currentTarget;
     const orderId = `AS-${Date.now().toString().slice(-6)}`;
 
     const orderItems = items.map((item) => {
       const fragrance = fragrances.find((f) => f.id === item.fragranceId);
       return {
-        name: fragrance?.name ?? item.fragranceId,
-        size: item.size,
+        name:     fragrance?.name ?? item.fragranceId,
+        size:     item.size,
         quantity: item.quantity,
-        image: `https://alluring-scents-v2.vercel.app${fragrance?.image ?? ""}`,
+        image:    `https://alluring-scents-v2.vercel.app${fragrance?.image ?? ""}`,
       };
     });
 
     const metadata = {
       orderId,
-      firstName:  (form.elements.namedItem("firstName")  as HTMLInputElement).value,
-      lastName:   (form.elements.namedItem("lastName")   as HTMLInputElement).value,
-      email:      (form.elements.namedItem("email")      as HTMLInputElement).value,
-      phone:      (form.elements.namedItem("phone")      as HTMLInputElement).value,
-      address:    (form.elements.namedItem("address")    as HTMLInputElement).value,
-      city:       (form.elements.namedItem("city")       as HTMLInputElement).value,
-      province:   (form.elements.namedItem("province")   as HTMLInputElement).value,
-      postalCode: (form.elements.namedItem("postalCode") as HTMLInputElement).value,
-      items: JSON.stringify(orderItems),
-      deliveryInCents: String(delivery * 100),
+      firstName:       (form.elements.namedItem("firstName")  as HTMLInputElement).value,
+      lastName:        (form.elements.namedItem("lastName")   as HTMLInputElement).value,
+      email:           (form.elements.namedItem("email")      as HTMLInputElement).value,
+      phone:           (form.elements.namedItem("phone")      as HTMLInputElement).value,
+      address:         (form.elements.namedItem("address")    as HTMLInputElement).value,
+      city:            (form.elements.namedItem("city")       as HTMLInputElement).value,
+      province:        (form.elements.namedItem("province")   as HTMLInputElement).value,
+      postalCode:      (form.elements.namedItem("postalCode") as HTMLInputElement).value,
+      items:           JSON.stringify(orderItems),
+      deliveryInCents: String(deliveryFeeCents),
     };
 
     try {
       const response = await fetch(`${API}/create-checkout`, {
-        method: "POST",
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amountInCents: Math.round(total * 100),
-          currency: "ZAR",
-          successUrl: `${window.location.origin}/success?order=${orderId}`,
-          cancelUrl:  `${window.location.origin}/checkout`,
+          currency:      "ZAR",
+          successUrl:    `${window.location.origin}/success?order=${orderId}`,
+          cancelUrl:     `${window.location.origin}/checkout`,
           metadata,
         }),
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong.");
-      }
-
+      if (!response.ok) throw new Error(data.error || "Something went wrong.");
       window.location.href = data.redirectUrl;
 
     } catch (err: unknown) {
@@ -105,13 +114,13 @@ export function CheckoutPage() {
                 </div>
               ) : (
                 <form className="grid gap-4 sm:grid-cols-2" onSubmit={handleSubmit}>
-                  <Input required name="firstName" placeholder="First Name" />
-                  <Input required name="lastName" placeholder="Last Name" />
-                  <Input required name="email" type="email" placeholder="Email" />
-                  <Input required name="phone" placeholder="Phone Number" />
-                  <Input required name="address" placeholder="Address" className="sm:col-span-2" />
-                  <Input required name="city" placeholder="City" />
-                  <Input required name="province" placeholder="Province" />
+                  <Input required name="firstName"  placeholder="First Name" />
+                  <Input required name="lastName"   placeholder="Last Name" />
+                  <Input required name="email"      type="email" placeholder="Email" />
+                  <Input required name="phone"      placeholder="Phone Number" />
+                  <Input required name="address"    placeholder="Address" className="sm:col-span-2" />
+                  <Input required name="city"       placeholder="City" />
+                  <Input required name="province"   placeholder="Province" />
                   <Input required name="postalCode" placeholder="Postal Code" className="sm:col-span-2" />
 
                   {error && (
@@ -120,13 +129,20 @@ export function CheckoutPage() {
                     </div>
                   )}
 
-                  <Button type="submit" className="sm:col-span-2" disabled={loading}>
-                    Complete Order
+                  <Button
+                    type="submit"
+                    className="sm:col-span-2"
+                    disabled={loading || deliveryLoading}
+                  >
+                    {deliveryLoading ? "Loading..." : "Complete Order"}
                   </Button>
                 </form>
               )}
             </div>
-            <CheckoutSummary />
+            <CheckoutSummary
+              deliveryFee={deliveryFee}
+              deliveryLoading={deliveryLoading}
+            />
           </div>
         )}
       </Section>

@@ -760,6 +760,41 @@ app.get("/order/:orderId/receipt", async (req, res) => {
   }
 });
 
+// ─── Settings — Public ────────────────────────────────────────────────────────
+
+app.get("/settings/delivery-fee", async (req, res) => {
+  const { data, error } = await supabase
+    .from("settings")
+    .select("value")
+    .eq("key", "delivery_fee_cents")
+    .single();
+
+  if (error || !data) {
+    return res.json({ deliveryFeeCents: 9500 }); // fallback
+  }
+
+  res.json({ deliveryFeeCents: parseInt(data.value, 10) });
+});
+
+// ─── Settings — Admin ─────────────────────────────────────────────────────────
+
+app.patch("/admin/settings/delivery-fee", requireAdmin, async (req, res) => {
+  const { deliveryFeeCents } = req.body;
+
+  if (typeof deliveryFeeCents !== "number" || deliveryFeeCents < 0) {
+    return res.status(400).json({ error: "Invalid delivery fee." });
+  }
+
+  const { error } = await supabase
+    .from("settings")
+    .update({ value: String(deliveryFeeCents), updated_at: new Date().toISOString() })
+    .eq("key", "delivery_fee_cents");
+
+  if (error) return res.status(500).json({ error: "Failed to update delivery fee." });
+
+  res.json({ success: true, deliveryFeeCents });
+});
+
 // ─── Start Server ─────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3001;

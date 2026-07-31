@@ -109,7 +109,9 @@ export function AdminPage() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
-  const [tab, setTab] = useState<"orders" | "inventory" | "products">("orders");
+  const [tab, setTab] = useState<
+    "orders" | "inventory" | "products" | "settings"
+  >("orders");
   const [orders, setOrders] = useState<Order[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -136,6 +138,14 @@ export function AdminPage() {
   const [formSaving, setFormSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Settings state
+  const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
+  const [deliveryFeeInput, setDeliveryFeeInput] = useState("95");
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [settingsSaving, setSettingsSaving] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
+  const [settingsError, setSettingsError] = useState<string | null>(null);
 
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -198,6 +208,19 @@ export function AdminPage() {
       setCollections(Array.isArray(c) ? c : []);
       setProductsLoading(false);
     });
+  }, [tab, token]);
+
+  useEffect(() => {
+    if (tab !== "settings" || !token) return;
+    setSettingsLoading(true);
+    fetch(`${API}/settings/delivery-fee`)
+      .then((r) => r.json())
+      .then((data) => {
+        setDeliveryFeeCents(data.deliveryFeeCents ?? 9500);
+        setDeliveryFeeInput(String((data.deliveryFeeCents ?? 9500) / 100));
+      })
+      .catch(() => {})
+      .finally(() => setSettingsLoading(false));
   }, [tab, token]);
 
   // ── Filtered orders ────────────────────────────────────────────────────────
@@ -409,6 +432,33 @@ export function AdminPage() {
     setFragrances((prev) =>
       prev.map((f) => (f.id === id ? { ...f, active } : f)),
     );
+  };
+
+  const saveDeliveryFee = async () => {
+    setSettingsError(null);
+    setSettingsSaved(false);
+    const rands = parseFloat(deliveryFeeInput);
+    if (isNaN(rands) || rands < 0) {
+      setSettingsError("Please enter a valid delivery fee.");
+      return;
+    }
+    const cents = Math.round(rands * 100);
+    setSettingsSaving(true);
+    try {
+      const res = await fetch(`${API}/admin/settings/delivery-fee`, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ deliveryFeeCents: cents }),
+      });
+      if (!res.ok) throw new Error("Failed to save.");
+      setDeliveryFeeCents(cents);
+      setSettingsSaved(true);
+      setTimeout(() => setSettingsSaved(false), 3000);
+    } catch {
+      setSettingsError("Failed to update delivery fee. Please try again.");
+    } finally {
+      setSettingsSaving(false);
+    }
   };
 
   // ── Login screen ───────────────────────────────────────────────────────────
@@ -941,19 +991,21 @@ export function AdminPage() {
 
           {/* Tabs */}
           <div className="flex gap-6 border-b border-[#1a1a1a]">
-            {(["orders", "inventory", "products"] as const).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`pb-3 text-sm uppercase tracking-widest transition-colors ${
-                  tab === t
-                    ? "text-[#c9a84c] border-b-2 border-[#c9a84c]"
-                    : "text-[#666] hover:text-white"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+            {(["orders", "inventory", "products", "settings"] as const).map(
+              (t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`pb-3 text-sm uppercase tracking-widest transition-colors ${
+                    tab === t
+                      ? "text-[#c9a84c] border-b-2 border-[#c9a84c]"
+                      : "text-[#666] hover:text-white"
+                  }`}
+                >
+                  {t}
+                </button>
+              ),
+            )}
           </div>
 
           {/* Orders tab */}
@@ -1242,6 +1294,87 @@ export function AdminPage() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Settings tab */}
+          {tab === "settings" && (
+            <div className="space-y-6 max-w-lg">
+              {/* Delivery fee */}
+              <div className="border border-[#1a1a1a] p-6 space-y-4">
+                <div className="space-y-1">
+                  <p className="text-xs text-[#666] uppercase tracking-widest">
+                    Delivery Fee
+                  </p>
+                  <p className="text-xs text-[#555]">
+                    This fee is charged at checkout and shown to customers on
+                    the order summary.
+                  </p>
+                </div>
+
+                {settingsLoading ? (
+                  <div className="space-y-3">
+                    <Skeleton variant="dark" className="h-10 w-full" />
+                    <Skeleton variant="dark" className="h-9 w-24" />
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-[#666]">R</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={deliveryFeeInput}
+                        onChange={(e) => {
+                          setDeliveryFeeInput(e.target.value);
+                          setSettingsSaved(false);
+                          setSettingsError(null);
+                        }}
+                        className="flex-1 bg-[#111] border border-[#222] text-white px-4 py-2.5 text-sm outline-none focus:border-[#c9a84c] transition-colors"
+                        placeholder="95.00"
+                      />
+                    </div>
+
+                    <p className="text-xs text-[#555]">
+                      Current fee:{" "}
+                      <span className="text-[#c9a84c]">
+                        R{(deliveryFeeCents / 100).toFixed(2)}
+                      </span>
+                    </p>
+
+                    {settingsError && (
+                      <p className="text-xs text-red-400">{settingsError}</p>
+                    )}
+
+                    {settingsSaved && (
+                      <p className="text-xs text-green-400">
+                        ✓ Delivery fee updated successfully
+                      </p>
+                    )}
+
+                    <button
+                      onClick={saveDeliveryFee}
+                      disabled={settingsSaving}
+                      className="px-6 py-2.5 text-xs uppercase tracking-widest bg-[#c9a84c] text-black hover:bg-[#b8973b] transition-colors disabled:opacity-40"
+                    >
+                      {settingsSaving ? "Saving..." : "Save Delivery Fee"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Info box */}
+              <div className="border border-[#1a1a1a] p-4 space-y-2">
+                <p className="text-xs text-[#666] uppercase tracking-widest">
+                  Note
+                </p>
+                <p className="text-xs text-[#555] leading-relaxed">
+                  Changing the delivery fee takes effect immediately for all new
+                  orders. Existing orders are not affected — their delivery fee
+                  is locked at the time of purchase.
+                </p>
+              </div>
             </div>
           )}
         </div>
