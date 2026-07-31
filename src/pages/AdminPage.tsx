@@ -308,10 +308,10 @@ export function AdminPage() {
 
       // Build sale prices object
       const salePricesPayload = saleEnabled ? {
-      "10ml": salePrices["10ml"] != null ? Number(salePrices["10ml"]) : undefined,
-      "50ml": salePrices["50ml"] != null ? Number(salePrices["50ml"]) : undefined,
-      "100ml": salePrices["100ml"] != null ? Number(salePrices["100ml"]) : undefined,
-    } : null;
+        "10ml":  salePrices["10ml"]  ? Number(salePrices["10ml"])  : null,
+        "50ml":  salePrices["50ml"]  ? Number(salePrices["50ml"])  : null,
+        "100ml": salePrices["100ml"] ? Number(salePrices["100ml"]) : null,
+      } : null;
 
       const payload = {
         id: editingFragrance?.id ?? form.slug,
