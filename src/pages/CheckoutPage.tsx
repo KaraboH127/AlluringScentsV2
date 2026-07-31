@@ -5,25 +5,23 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Skeleton } from "../components/ui/Skeleton";
+import { useFragrances } from "../hooks/useProducts";
 import { useCart } from "../store/CartContext";
-import { fragrances } from "../config/site";
 
 const API = import.meta.env.VITE_API_URL;
 
 export function CheckoutPage() {
   const { items, subtotal }                     = useCart();
+  const { fragrances }                          = useFragrances();
   const [loading, setLoading]                   = useState(false);
   const [error, setError]                       = useState<string | null>(null);
   const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
   const [deliveryLoading, setDeliveryLoading]   = useState(true);
 
-  // Fetch live delivery fee
   useEffect(() => {
     fetch(`${API}/settings/delivery-fee`)
       .then((r) => r.json())
-      .then((data) => {
-        setDeliveryFeeCents(data.deliveryFeeCents ?? 9500);
-      })
+      .then((data) => setDeliveryFeeCents(data.deliveryFeeCents ?? 9500))
       .catch(() => setDeliveryFeeCents(9500))
       .finally(() => setDeliveryLoading(false));
   }, []);

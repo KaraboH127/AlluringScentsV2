@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { collections, formatCurrency, fragrances } from "../../config/site";
+import { formatCurrency } from "../../config/site";
+import { useFragrances, useCollections } from "../../hooks/useProducts";
 import { useCart } from "../../store/CartContext";
 import type { CartItem as CartEntry } from "../../store/CartContext";
 import { QuantitySelector } from "../ui/QuantitySelector";
@@ -10,14 +11,10 @@ const API = import.meta.env.VITE_API_URL;
 
 export function CartItem({ item }: { item: CartEntry }) {
   const { updateQuantity, removeFromCart } = useCart();
-  const [stock, setStock] = useState<number | null>(null);
+  const { fragrances, loading: fragrancesLoading }   = useFragrances();
+  const { collections, loading: collectionsLoading } = useCollections();
+  const [stock, setStock]               = useState<number | null>(null);
   const [stockLoading, setStockLoading] = useState(true);
-
-  const fragrance = fragrances.find((entry) => entry.id === item.fragranceId);
-  if (!fragrance) return null;
-
-  const collection = collections.find((entry) => entry.id === fragrance.collection)!;
-  const unitPrice = collection.prices[item.size];
 
   useEffect(() => {
     setStockLoading(true);
@@ -36,9 +33,30 @@ export function CartItem({ item }: { item: CartEntry }) {
       });
   }, [item.fragranceId, item.size]);
 
+  if (fragrancesLoading || collectionsLoading) {
+    return (
+      <div className="border-b py-4">
+        <div className="flex items-start gap-3">
+          <Skeleton className="h-20 w-16" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const fragrance = fragrances.find((entry) => entry.id === item.fragranceId);
+  if (!fragrance) return null;
+
+  const collection = collections.find((entry) => entry.id === fragrance.collection)!;
+  const unitPrice   = collection.prices[item.size];
+
   const isOutOfStock = stock !== null && stock === 0;
-  const isLowStock   = stock !== null && stock > 0 && stock <= 5;
-  const exceedsStock = stock !== null && stock > 0 && item.quantity > stock;
+  const isLowStock    = stock !== null && stock > 0 && stock <= 5;
+  const exceedsStock  = stock !== null && stock > 0 && item.quantity > stock;
 
   return (
     <div className={`border-b py-4 ${isOutOfStock ? "opacity-60" : ""}`}>

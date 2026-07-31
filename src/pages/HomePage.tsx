@@ -5,24 +5,29 @@ import { SEOHead } from "../SEOHead";
 import { Section } from "../components/layout/Section";
 import { Image } from "../components/ui/Image";
 import { Button } from "../components/ui/Button";
-import { collections, featuredFragrances, fragrances, homeWhyChoose, siteConfig, getCollectionById } from "../config/site";
+import { Skeleton } from "../components/ui/Skeleton";
+import { featuredFragrances, homeWhyChoose, siteConfig } from "../config/site";
+import { useFragrances, useCollections } from "../hooks/useProducts";
 import { organizationSchema } from "../utils/seo";
 
 const SLIDE_DURATION = 5000;
 
 export function HomePage() {
+  const { fragrances, loading: fragrancesLoading }   = useFragrances();
+  const { collections, loading: collectionsLoading } = useCollections();
+  const loading = fragrancesLoading || collectionsLoading;
+
   const featured = fragrances.filter((f) => featuredFragrances.includes(f.id));
-  const [activeIndex, setActiveIndex]   = useState(0);
-  const [isPaused, setIsPaused]         = useState(false);
-  const [touchStart, setTouchStart]     = useState<number | null>(null);
-  const intervalRef                     = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused]       = useState(false);
+  const [touchStart, setTouchStart]   = useState<number | null>(null);
+  const intervalRef                   = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const activeFragrance = featured[activeIndex];
-  const activeCollection = getCollectionById(activeFragrance?.collection ?? "");
+  const activeFragrance  = featured[activeIndex];
+  const activeCollection = collections.find((c) => c.id === activeFragrance?.collection);
 
-  // Auto-spin
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || featured.length === 0) return;
     intervalRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % featured.length);
     }, SLIDE_DURATION);
@@ -31,7 +36,6 @@ export function HomePage() {
 
   const goTo = (index: number) => {
     setActiveIndex(index);
-    // Reset timer on manual navigation
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (!isPaused) {
       intervalRef.current = setInterval(() => {
@@ -40,20 +44,13 @@ export function HomePage() {
     }
   };
 
-  // Touch handlers for mobile swipe
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.touches[0].clientX);
-  };
-
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStart === null) return;
     const diff = touchStart - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        goTo((activeIndex + 1) % featured.length);
-      } else {
-        goTo((activeIndex - 1 + featured.length) % featured.length);
-      }
+      if (diff > 0) goTo((activeIndex + 1) % featured.length);
+      else goTo((activeIndex - 1 + featured.length) % featured.length);
     }
     setTouchStart(null);
   };
@@ -152,27 +149,38 @@ export function HomePage() {
           <p className="text-xs uppercase tracking-[0.24em] accent-gold">Our Collections</p>
           <h2 className="text-3xl site-heading md:text-4xl">Two collections. One identity.</h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {collections.map((collection) => {
-            const collectionFragrances = fragrances.filter((f) => f.collection === collection.id);
-            const coverImage = collectionFragrances[0]?.image ?? siteConfig.images.collection;
-            return (
-              <Link key={collection.id} to="/collections" className="group block">
-                <div className="overflow-hidden">
-                  <Image src={coverImage} alt={collection.name} className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                </div>
-                <div className="border border-t-0 panel-surface p-6 space-y-2">
-                  <p className="text-xs uppercase tracking-[0.2em] accent-gold">{collection.name}</p>
-                  <h3 className="text-2xl site-heading">{collection.tagline}</h3>
-                  <p className="text-sm text-muted">{collection.description}</p>
-                  <p className="text-sm accent-gold pt-1">
-                    Starting from R{collection.prices["10ml"]} · {collectionFragrances.length} fragrances
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        {loading ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-72 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {collections.map((collection) => {
+              const collectionFragrances = fragrances.filter((f) => f.collection === collection.id);
+              const coverImage = collectionFragrances[0]?.image ?? siteConfig.images.collection;
+              return (
+                <Link key={collection.id} to="/collections" className="group block">
+                  <div className="overflow-hidden">
+                    <Image src={coverImage} alt={collection.name} className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  </div>
+                  <div className="border border-t-0 panel-surface p-6 space-y-2">
+                    <p className="text-xs uppercase tracking-[0.2em] accent-gold">{collection.name}</p>
+                    <h3 className="text-2xl site-heading">{collection.tagline}</h3>
+                    <p className="text-sm text-muted">{collection.description}</p>
+                    <p className="text-sm accent-gold pt-1">
+                      Starting from R{collection.prices["10ml"]} · {collectionFragrances.length} fragrances
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </Section>
 
       {/* ── Featured Fragrances Carousel ──────────────────────────────────────── */}
@@ -187,145 +195,148 @@ export function HomePage() {
           </Link>
         </div>
 
-        <div
-          className="relative"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* ── Image carousel ──────────────────────────────────────────────── */}
-          <div className="relative h-[420px] sm:h-[520px] overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.2, ease: "easeInOut" }}
-                className="absolute inset-0"
-              >
-                <Image
-                  src={activeFragrance.image}
-                  alt={activeFragrance.name}
-                  className="h-full w-full object-cover"
-                  priority
-                />
-                {/* Gradient overlay so info below reads cleanly */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-transparent" />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Collection badge — top left */}
-            <div className="absolute top-4 left-4">
+        {loading || featured.length === 0 ? (
+          <div className="space-y-8">
+            <Skeleton className="h-[420px] sm:h-[520px] w-full" />
+            <div className="grid gap-8 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div
+            className="relative"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Image carousel */}
+            <div className="relative h-[420px] sm:h-[520px] overflow-hidden">
               <AnimatePresence mode="wait">
-                <motion.span
+                <motion.div
                   key={activeIndex}
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.5 }}
-                  className="text-xs uppercase tracking-[0.2em] accent-gold border border-[var(--color-gold)] px-3 py-1 bg-white/80 backdrop-blur-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="absolute inset-0"
                 >
-                  {activeCollection?.name}
-                </motion.span>
+                  <Image
+                    src={activeFragrance.image}
+                    alt={activeFragrance.name}
+                    className="h-full w-full object-cover"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)] via-transparent to-transparent" />
+                </motion.div>
+              </AnimatePresence>
+
+              <div className="absolute top-4 left-4">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={activeIndex}
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-xs uppercase tracking-[0.2em] accent-gold border border-[var(--color-gold)] px-3 py-1 bg-white/80 backdrop-blur-sm"
+                  >
+                    {activeCollection?.name}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-border)]">
+                {!isPaused && (
+                  <motion.div
+                    key={activeIndex}
+                    className="h-full bg-[var(--color-gold)]"
+                    initial={{ width: "0%" }}
+                    animate={{ width: "100%" }}
+                    transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Fragrance info */}
+            <div className="mt-8 min-h-[220px]">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeIndex}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                  className="grid gap-8 lg:grid-cols-[1fr_1px_1fr_1px_1fr]"
+                >
+                  <div className="space-y-3">
+                    <h3 className="text-3xl site-heading md:text-4xl">{activeFragrance.name}</h3>
+                    <p className="text-sm uppercase tracking-[0.18em] text-muted">{activeFragrance.extrait}</p>
+                    <p className="text-sm text-muted leading-relaxed">{activeFragrance.description}</p>
+                    <p className="text-lg accent-gold site-heading">
+                      From R{activeCollection?.prices["10ml"]}
+                    </p>
+                  </div>
+
+                  <div className="hidden lg:block bg-[var(--color-border)]" />
+
+                  <div className="space-y-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-muted">Fragrance Notes</p>
+                    {[
+                      { label: "Top",    value: activeFragrance.notes.top    },
+                      { label: "Middle", value: activeFragrance.notes.middle },
+                      { label: "Base",   value: activeFragrance.notes.base   },
+                    ].map((note) => (
+                      <div key={note.label} className="space-y-0.5">
+                        <p className="text-xs uppercase tracking-[0.15em] accent-gold">{note.label}</p>
+                        <p className="text-sm text-muted">{note.value}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="hidden lg:block bg-[var(--color-border)]" />
+
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted">Best For</p>
+                      <p className="text-sm text-muted">{activeFragrance.bestFor}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted">Personality</p>
+                      <p className="text-sm text-muted">{activeFragrance.personality}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted">Occasions</p>
+                      <p className="text-sm text-muted">{activeFragrance.occasions.join(", ")}</p>
+                    </div>
+                    <Link to={`/fragrance/${activeFragrance.slug}`}>
+                      <Button className="mt-2">Explore {activeFragrance.name}</Button>
+                    </Link>
+                  </div>
+                </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Progress bar — bottom of image */}
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-border)]">
-              {!isPaused && (
-                <motion.div
-                  key={activeIndex}
-                  className="h-full bg-[var(--color-gold)]"
-                  initial={{ width: "0%" }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+            {/* Dot indicators */}
+            <div className="flex items-center justify-center gap-3 mt-8">
+              {featured.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  className={`transition-all duration-500 rounded-full ${
+                    i === activeIndex
+                      ? "w-6 h-2 bg-[var(--color-gold)]"
+                      : "w-2 h-2 bg-[var(--color-border)] hover:bg-[var(--color-gold-strong)]"
+                  }`}
+                  aria-label={`Go to ${featured[i].name}`}
                 />
-              )}
+              ))}
             </div>
           </div>
-
-          {/* ── Fragrance info ───────────────────────────────────────────────── */}
-          <div className="mt-8 min-h-[220px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeIndex}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.6, ease: "easeInOut" }}
-                className="grid gap-8 lg:grid-cols-[1fr_1px_1fr_1px_1fr]"
-              >
-                {/* Name + description */}
-                <div className="space-y-3">
-                  <h3 className="text-3xl site-heading md:text-4xl">{activeFragrance.name}</h3>
-                  <p className="text-sm uppercase tracking-[0.18em] text-muted">{activeFragrance.extrait}</p>
-                  <p className="text-sm text-muted leading-relaxed">{activeFragrance.description}</p>
-                  <p className="text-lg accent-gold site-heading">
-                    From R{activeCollection?.prices["10ml"]}
-                  </p>
-                </div>
-
-                {/* Vertical divider */}
-                <div className="hidden lg:block bg-[var(--color-border)]" />
-
-                {/* Fragrance notes */}
-                <div className="space-y-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted">Fragrance Notes</p>
-                  {[
-                    { label: "Top",    value: activeFragrance.notes.top    },
-                    { label: "Middle", value: activeFragrance.notes.middle },
-                    { label: "Base",   value: activeFragrance.notes.base   },
-                  ].map((note) => (
-                    <div key={note.label} className="space-y-0.5">
-                      <p className="text-xs uppercase tracking-[0.15em] accent-gold">{note.label}</p>
-                      <p className="text-sm text-muted">{note.value}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Vertical divider */}
-                <div className="hidden lg:block bg-[var(--color-border)]" />
-
-                {/* Best for + CTA */}
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted">Best For</p>
-                    <p className="text-sm text-muted">{activeFragrance.bestFor}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted">Personality</p>
-                    <p className="text-sm text-muted">{activeFragrance.personality}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs uppercase tracking-[0.2em] text-muted">Occasions</p>
-                    <p className="text-sm text-muted">{activeFragrance.occasions.join(", ")}</p>
-                  </div>
-                  <Link to={`/fragrance/${activeFragrance.slug}`}>
-                    <Button className="mt-2">Explore {activeFragrance.name}</Button>
-                  </Link>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* ── Dot indicators ───────────────────────────────────────────────── */}
-          <div className="flex items-center justify-center gap-3 mt-8">
-            {featured.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                className={`transition-all duration-500 rounded-full ${
-                  i === activeIndex
-                    ? "w-6 h-2 bg-[var(--color-gold)]"
-                    : "w-2 h-2 bg-[var(--color-border)] hover:bg-[var(--color-gold-strong)]"
-                }`}
-                aria-label={`Go to ${featured[i].name}`}
-              />
-            ))}
-          </div>
-        </div>
+        )}
 
         <div className="mt-8 sm:hidden">
           <Link to="/collections">

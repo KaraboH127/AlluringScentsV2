@@ -1,25 +1,29 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { SEOHead } from "../SEOHead";
 import { FragranceHero } from "../components/fragrance/FragranceHero";
 import { FragranceNotes } from "../components/fragrance/FragranceNotes";
 import { Section } from "../components/layout/Section";
 import { Breadcrumb } from "../components/ui/Breadcrumb";
-import { collections, getFragranceBySlug, siteConfig } from "../config/site";
+import { Skeleton } from "../components/ui/Skeleton";
+import { siteConfig } from "../config/site";
+import { useFragranceBySlug, useCollections } from "../hooks/useProducts";
 import { useCart } from "../store/CartContext";
 import type { SizeOption } from "../types/site";
 
 const API = import.meta.env.VITE_API_URL;
 
 export function FragranceDetailPage() {
-  const { slug = "" }   = useParams();
-  const fragrance       = useMemo(() => getFragranceBySlug(slug), [slug]);
+  const { slug = "" } = useParams();
+  const { fragrance, loading: fragranceLoading } = useFragranceBySlug(slug);
+  const { collections, loading: collectionsLoading } = useCollections();
+
   const [size, setSize] = useState<SizeOption>("50ml");
-  const [quantity, setQuantity]     = useState(1);
-  const [stock, setStock]           = useState<Record<string, number>>({});
+  const [quantity, setQuantity] = useState(1);
+  const [stock, setStock] = useState<Record<string, number>>({});
   const [stockLoading, setStockLoading] = useState(true);
-  const [added, setAdded]           = useState(false);
-  const { addToCart }               = useCart();
+  const [added, setAdded] = useState(false);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (!fragrance) return;
@@ -39,6 +43,25 @@ export function FragranceDetailPage() {
       .catch(() => setStockLoading(false));
   }, [fragrance?.id]);
 
+  const pageLoading = fragranceLoading || collectionsLoading;
+
+  if (pageLoading) {
+    return (
+      <Section>
+        <div className="grid gap-10 lg:grid-cols-2">
+          <Skeleton className="h-[520px] w-full" />
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-11 w-full mt-6" />
+          </div>
+        </div>
+      </Section>
+    );
+  }
+
   if (!fragrance) {
     return (
       <Section>
@@ -47,7 +70,7 @@ export function FragranceDetailPage() {
     );
   }
 
-  const collection   = collections.find((entry) => entry.id === fragrance.collection)!;
+  const collection = collections.find((c) => c.id === fragrance.collection)!;
   const currentStock = stock[size] ?? 0;
   const isOutOfStock = !stockLoading && currentStock === 0;
 
@@ -91,8 +114,12 @@ export function FragranceDetailPage() {
         />
         <FragranceHero
           fragrance={fragrance}
+          collection={collection}
           selectedSize={size}
-          onSizeChange={(s) => { setSize(s); setAdded(false); }}
+          onSizeChange={(s) => {
+            setSize(s);
+            setAdded(false);
+          }}
           quantity={quantity}
           onQuantityChange={setQuantity}
           stock={stock}
@@ -116,7 +143,8 @@ export function FragranceDetailPage() {
             {fragrance.occasions.join(", ")}
           </p>
           <p>
-            <span className="accent-gold">Suggested Personality:</span> {fragrance.personality}
+            <span className="accent-gold">Suggested Personality:</span>{" "}
+            {fragrance.personality}
           </p>
         </div>
       </Section>
