@@ -20,7 +20,7 @@ const supabase = createClient(
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 app.use("/webhook", express.raw({ type: "application/json" }));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
