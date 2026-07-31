@@ -284,8 +284,8 @@ async function generateInvoice(rawOrder) {
       doc.rect(M, rowY, CW, 0.5).fill("#e5e5e5");
       rowY += 16;
 
-      const delivery = 9500;
-      const subtotal = order.amount_in_cents - delivery;
+      const deliveryInCents = order.delivery_in_cents ?? 9500;
+      const subtotal = order.amount_in_cents - deliveryInCents;
       const totX = W - M - 160;
       const amtX = W - M - 55;
 
@@ -304,7 +304,7 @@ async function generateInvoice(rawOrder) {
         .fontSize(9)
         .fillColor(GREY)
         .text("Delivery", totX, rowY)
-        .text(fmt(delivery), amtX, rowY, { align: "right", width: 55 });
+        .text(fmt(deliveryInCents), amtX, rowY, { align: "right", width: 55 });
       rowY += 16;
 
       // Total divider
