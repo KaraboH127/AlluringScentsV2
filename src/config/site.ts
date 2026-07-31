@@ -68,10 +68,6 @@ export const collections: Collection[] = [
   },
 ];
 
-export const fragrances: Fragrance[] = [
-
-];
-
 export const featuredFragrances = [
   "9-lives",
   "golden-amber", 
@@ -97,6 +93,3 @@ export function getCollectionById(id: Collection["id"]) {
   return collections.find((collection) => collection.id === id);
 }
 
-export function getFragranceBySlug(slug: string) {
-  return fragrances.find((fragrance) => fragrance.slug === slug);
-}
