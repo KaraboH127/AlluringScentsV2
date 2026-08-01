@@ -32,8 +32,13 @@ export function CartItem({ item }: { item: CartEntry }) {
   if (!fragrance) return null;
 
   const collection = collections.find((entry) => entry.id === fragrance.collection)!;
-  const unitPrice   = collection.prices[item.size];
-  const stock       = stockMap[item.size] ?? null;
+
+  const originalPrice = collection.prices[item.size];
+  const salePrice     = fragrance.sale_prices?.[item.size];
+  const isOnSale      = !!salePrice && salePrice < originalPrice;
+  const unitPrice     = isOnSale ? salePrice! : originalPrice;
+
+  const stock = stockMap[item.size] ?? null;
 
   const isOutOfStock = stock !== null && stock === 0;
   const isLowStock    = stock !== null && stock > 0 && stock <= 5;
@@ -46,7 +51,15 @@ export function CartItem({ item }: { item: CartEntry }) {
         <div className="flex-1 space-y-2">
           <p className="text-sm site-heading">{fragrance.name}</p>
           <p className="text-xs uppercase tracking-[0.15em] text-muted">{item.size}</p>
-          <p className="text-xs accent-gold">{formatCurrency(unitPrice)}</p>
+
+          {isOnSale ? (
+            <div className="flex items-center gap-2">
+              <p className="text-xs accent-gold font-medium">{formatCurrency(unitPrice)}</p>
+              <p className="text-xs text-muted line-through">{formatCurrency(originalPrice)}</p>
+            </div>
+          ) : (
+            <p className="text-xs accent-gold">{formatCurrency(unitPrice)}</p>
+          )}
 
           {stockLoading ? (
             <div className="space-y-2">

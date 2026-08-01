@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { collections, fragrances } from "../config/site";
+import { useFragrances, useCollections } from "../hooks/useProducts";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import type { SizeOption } from "../types/site";
 
@@ -25,16 +25,25 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
-function itemPrice(fragranceId: string, size: SizeOption) {
-  const fragrance = fragrances.find((entry) => entry.id === fragranceId);
-  if (!fragrance) return 0;
-  const collection = collections.find((entry) => entry.id === fragrance.collection);
-  return collection ? collection.prices[size] : 0;
-}
-
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useLocalStorage<CartItem[]>("alluring-cart", []);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+
+  const { fragrances }  = useFragrances();
+  const { collections } = useCollections();
+
+  const itemPrice = (fragranceId: string, size: SizeOption) => {
+    const fragrance = fragrances.find((entry) => entry.id === fragranceId);
+    if (!fragrance) return 0;
+    const collection = collections.find((entry) => entry.id === fragrance.collection);
+    if (!collection) return 0;
+
+    const originalPrice = collection.prices[size];
+    const salePrice = fragrance.sale_prices?.[size];
+    const isOnSale = !!salePrice && salePrice < originalPrice;
+
+    return isOnSale ? salePrice! : originalPrice;
+  };
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce(
@@ -83,7 +92,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       },
       clearCart: () => setItems([]),
     };
-  }, [isDrawerOpen, items, setItems]);
+  }, [isDrawerOpen, items, setItems, fragrances, collections]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
