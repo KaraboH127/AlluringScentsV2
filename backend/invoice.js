@@ -31,12 +31,16 @@ const FRAGRANCE_COLLECTIONS = {
   signature: "private",
 };
 
-function getItemPrice(item) {
-  // Try to find price from fragrance name -> collection -> size
+function getItemUnitPrice(item) {
+  // Prefer sale price if item was purchased on sale
+  if (item.salePrice) return item.salePrice * 100;
+  if (item.originalPrice) return item.originalPrice * 100;
+
+  // Fallback for older orders without price data saved
   const slug = item.name?.toLowerCase().replace(/\s+/g, "-");
   const collection = FRAGRANCE_COLLECTIONS[slug];
   if (collection && PRICES[collection] && PRICES[collection][item.size]) {
-    return PRICES[collection][item.size] * 100 * (item.quantity || 1);
+    return PRICES[collection][item.size] * 100;
   }
   return null;
 }
@@ -250,33 +254,78 @@ async function generateInvoice(rawOrder) {
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        const unitCents = getItemPrice({ ...item, quantity: 1 });
-        const totCents = getItemPrice(item);
+        const isOnSale = !!item.salePrice;
+        const unitCents = getItemUnitPrice(item);
+        const totCents =
+          unitCents !== null ? unitCents * (item.quantity || 1) : null;
+        const origCents = item.originalPrice ? item.originalPrice * 100 : null;
+
+        const rowHeight = isOnSale ? 34 : 26;
 
         // Alternating row background
         if (i % 2 === 0) {
-          doc.rect(M, rowY - 5, CW, 24).fill(LIGHT);
+          doc.rect(M, rowY - 5, CW, rowHeight).fill(LIGHT);
         }
 
+        // Item name + sale label
         doc
           .font("Helvetica-Bold")
           .fontSize(9)
           .fillColor(BLACK)
           .text(item.name, M + 10, rowY);
+
+        if (isOnSale && item.saleLabel) {
+          doc
+            .font("Helvetica-Bold")
+            .fontSize(7)
+            .fillColor("#dc2626")
+            .text(item.saleLabel, M + 10, rowY + 11);
+        }
+
         doc
           .font("Helvetica")
           .fontSize(9)
           .fillColor(GREY)
           .text(item.size, M + 240, rowY)
-          .text(String(item.quantity), M + 300, rowY)
-          .text(unitCents ? fmt(unitCents) : "—", M + 350, rowY);
+          .text(String(item.quantity), M + 300, rowY);
+
+        // Unit price — struck-through original + sale price if on sale
+        if (isOnSale && origCents !== null) {
+          doc
+            .font("Helvetica")
+            .fontSize(8)
+            .fillColor("#aaaaaa")
+            .text(fmt(origCents), M + 350, rowY);
+          // Strike-through line over original price
+          const origWidth = doc.widthOfString(fmt(origCents));
+          doc
+            .moveTo(M + 350, rowY + 4)
+            .lineTo(M + 350 + origWidth, rowY + 4)
+            .strokeColor("#aaaaaa")
+            .lineWidth(0.6)
+            .stroke();
+
+          doc
+            .font("Helvetica-Bold")
+            .fontSize(9)
+            .fillColor("#dc2626")
+            .text(fmt(unitCents), M + 350, rowY + 12);
+        } else {
+          doc
+            .font("Helvetica")
+            .fontSize(9)
+            .fillColor(GREY)
+            .text(unitCents !== null ? fmt(unitCents) : "—", M + 350, rowY);
+        }
+
+        // Line total
         doc
           .font("Helvetica-Bold")
           .fontSize(9)
           .fillColor(BLACK)
-          .text(totCents ? fmt(totCents) : "—", W - M - 55, rowY);
+          .text(totCents !== null ? fmt(totCents) : "—", W - M - 55, rowY);
 
-        rowY += 26;
+        rowY += rowHeight;
       }
 
       // ── Totals block ────────────────────────────────────────────────────

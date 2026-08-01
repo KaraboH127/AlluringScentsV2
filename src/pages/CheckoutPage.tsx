@@ -5,7 +5,7 @@ import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Skeleton } from "../components/ui/Skeleton";
-import { useFragrances } from "../hooks/useProducts";
+import { useFragrances, useCollections } from "../hooks/useProducts";
 import { useCart } from "../store/CartContext";
 
 const API = import.meta.env.VITE_API_URL;
@@ -13,6 +13,7 @@ const API = import.meta.env.VITE_API_URL;
 export function CheckoutPage() {
   const { items, subtotal }                     = useCart();
   const { fragrances }                          = useFragrances();
+  const { collections }                         = useCollections();
   const [loading, setLoading]                   = useState(false);
   const [error, setError]                       = useState<string | null>(null);
   const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
@@ -38,12 +39,21 @@ export function CheckoutPage() {
     const orderId = `AS-${Date.now().toString().slice(-6)}`;
 
     const orderItems = items.map((item) => {
-      const fragrance = fragrances.find((f) => f.id === item.fragranceId);
+      const fragrance  = fragrances.find((f) => f.id === item.fragranceId);
+      const collection = collections.find((c) => c.id === fragrance?.collection);
+
+      const originalPrice = collection?.prices[item.size] ?? 0;
+      const salePrice      = fragrance?.sale_prices?.[item.size];
+      const isOnSale        = !!salePrice && salePrice < originalPrice;
+
       return {
-        name:     fragrance?.name ?? item.fragranceId,
-        size:     item.size,
-        quantity: item.quantity,
-        image:    `https://alluring-scents-v2.vercel.app${fragrance?.image ?? ""}`,
+        name:            fragrance?.name ?? item.fragranceId,
+        size:            item.size,
+        quantity:        item.quantity,
+        image:           `https://alluring-scents-v2.vercel.app${fragrance?.image ?? ""}`,
+        originalPrice,
+        salePrice:       isOnSale ? salePrice : null,
+        saleLabel:       isOnSale ? (fragrance?.sale_label ?? null) : null,
       };
     });
 
