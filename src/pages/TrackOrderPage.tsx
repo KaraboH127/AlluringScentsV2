@@ -9,36 +9,68 @@ import { Skeleton } from "../components/ui/Skeleton";
 
 const API = import.meta.env.VITE_API_URL;
 
-interface OrderItem { name: string; size: string; quantity: number; image: string; }
+interface OrderItem {
+  name: string;
+  size: string;
+  quantity: number;
+  image: string;
+}
 
 interface Order {
-  order_id: string; first_name: string; last_name: string; email: string;
-  phone: string; address: string; city: string; province: string;
-  postal_code: string; amount_in_cents: number; status: string;
-  created_at: string; items?: OrderItem[];
+  order_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  province: string;
+  postal_code: string;
+  amount_in_cents: number;
+  delivery_in_cents?: number;
+  status: string;
+  created_at: string;
+  items?: OrderItem[];
 }
 
 const fmt = (cents: number) =>
-  new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(cents / 100);
+  new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(
+    cents / 100,
+  );
 
-const statusConfig: Record<string, { label: string; description: string; step: number }> = {
-  succeeded: { label: "Order Received",  description: "Your order has been received and is being prepared.", step: 1 },
-  fulfilled: { label: "Order Fulfilled", description: "Your order has been packed and is ready for shipping.", step: 2 },
-  shipped:   { label: "Order Shipped",   description: "Your order is on its way to you.", step: 3 },
+const statusConfig: Record<
+  string,
+  { label: string; description: string; step: number }
+> = {
+  succeeded: {
+    label: "Order Received",
+    description: "Your order has been received and is being prepared.",
+    step: 1,
+  },
+  fulfilled: {
+    label: "Order Fulfilled",
+    description: "Your order has been packed and is ready for shipping.",
+    step: 2,
+  },
+  shipped: {
+    label: "Order Shipped",
+    description: "Your order is on its way to you.",
+    step: 3,
+  },
 };
 
 const steps = [
-  { key: "succeeded", label: "Received"  },
+  { key: "succeeded", label: "Received" },
   { key: "fulfilled", label: "Fulfilled" },
-  { key: "shipped",   label: "Shipped"   },
+  { key: "shipped", label: "Shipped" },
 ];
 
 export function TrackOrderPage() {
-  const [orderId, setOrderId]     = useState("");
-  const [order, setOrder]         = useState<Order | null>(null);
-  const [loading, setLoading]     = useState(false);
-  const [error, setError]         = useState<string | null>(null);
-  const [searched, setSearched]   = useState(false);
+  const [orderId, setOrderId] = useState("");
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searched, setSearched] = useState(false);
   const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
 
   useEffect(() => {
@@ -61,15 +93,17 @@ export function TrackOrderPage() {
       const data = await res.json();
       setOrder(data);
     } catch {
-      setError("We couldn't find an order with that ID. Please check and try again.");
+      setError(
+        "We couldn't find an order with that ID. Please check and try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const currentStep = order ? (statusConfig[order.status]?.step ?? 1) : 0;
-  const delivery    = deliveryFeeCents;
-  const subtotal    = order ? order.amount_in_cents - delivery : 0;
+  const delivery = order?.delivery_in_cents ?? deliveryFeeCents;
+  const subtotal = order ? order.amount_in_cents - delivery : 0;
 
   return (
     <>
@@ -80,14 +114,32 @@ export function TrackOrderPage() {
       />
 
       <section className="relative min-h-[40vh] overflow-hidden">
-        <Image src="/image5.webp" alt="Track your order" className="absolute inset-0 h-full w-full object-cover" priority />
+        <Image
+          src="/image5.webp"
+          alt="Track your order"
+          className="absolute inset-0 h-full w-full object-cover"
+          priority
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70" />
         <div className="relative mx-auto flex min-h-[40vh] max-w-4xl flex-col justify-end px-4 pb-12 sm:px-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="space-y-3">
-            <p className="text-xs uppercase tracking-[0.3em] text-white/60">Alluring Scents</p>
-            <h1 className="text-4xl site-heading md:text-5xl text-white" style={{ color: "white" }}>Track Your Order</h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-3"
+          >
+            <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+              Alluring Scents
+            </p>
+            <h1
+              className="text-4xl site-heading md:text-5xl text-white"
+              style={{ color: "white" }}
+            >
+              Track Your Order
+            </h1>
             <p className="text-sm text-white/60 max-w-md">
-              Enter your order ID to see your delivery status. Your ID was emailed to you after purchase.
+              Enter your order ID to see your delivery status. Your ID was
+              emailed to you after purchase.
             </p>
           </motion.div>
         </div>
@@ -95,12 +147,14 @@ export function TrackOrderPage() {
 
       <Section>
         <div className="mx-auto max-w-2xl space-y-8">
-
           <div className="flex flex-col sm:flex-row gap-3">
-            <Input placeholder="e.g. AS-123456" value={orderId}
+            <Input
+              placeholder="e.g. AS-123456"
+              value={orderId}
               onChange={(e) => setOrderId(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleTrack()}
-              className="flex-1" />
+              className="flex-1"
+            />
             <Button onClick={handleTrack} disabled={loading || !orderId.trim()}>
               {loading ? "Searching..." : "Track Order"}
             </Button>
@@ -131,7 +185,10 @@ export function TrackOrderPage() {
               <div className="border p-6 space-y-4">
                 <Skeleton className="h-4 w-32" />
                 {Array.from({ length: 2 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-4 py-3 border-b last:border-0">
+                  <div
+                    key={i}
+                    className="flex items-center gap-4 py-3 border-b last:border-0"
+                  >
                     <Skeleton className="h-14 w-14 rounded shrink-0" />
                     <div className="flex-1 space-y-2">
                       <Skeleton className="h-4 w-36" />
@@ -150,14 +207,27 @@ export function TrackOrderPage() {
           )}
 
           {!loading && order && (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="space-y-6">
-
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
               <div className="border p-6 space-y-6">
                 <div className="space-y-1">
-                  <p className="text-xs text-muted uppercase tracking-widest">Order Reference</p>
-                  <p className="text-2xl accent-gold site-heading">{order.order_id}</p>
+                  <p className="text-xs text-muted uppercase tracking-widest">
+                    Order Reference
+                  </p>
+                  <p className="text-2xl accent-gold site-heading">
+                    {order.order_id}
+                  </p>
                   <p className="text-xs text-muted">
-                    Placed {new Date(order.created_at).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" })}
+                    Placed{" "}
+                    {new Date(order.created_at).toLocaleDateString("en-ZA", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
 
@@ -165,25 +235,40 @@ export function TrackOrderPage() {
                   <div className="flex items-center">
                     {steps.map((step, i) => {
                       const isComplete = currentStep > i + 1;
-                      const isActive   = currentStep === i + 1;
+                      const isActive = currentStep === i + 1;
                       return (
-                        <div key={step.key} className="flex items-center flex-1 last:flex-none">
+                        <div
+                          key={step.key}
+                          className="flex items-center flex-1 last:flex-none"
+                        >
                           <div className="flex flex-col items-center gap-1 shrink-0">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-colors ${
-                              isComplete || isActive ? "bg-[var(--color-gold)] border-[var(--color-gold)] text-black" : "border-[var(--color-border)] text-muted bg-white"
-                            }`}>
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-colors ${
+                                isComplete || isActive
+                                  ? "bg-[var(--color-gold)] border-[var(--color-gold)] text-black"
+                                  : "border-[var(--color-border)] text-muted bg-white"
+                              }`}
+                            >
                               {isComplete ? "✓" : i + 1}
                             </div>
-                            <p className={`text-xs whitespace-nowrap transition-colors ${
-                              isComplete || isActive ? "text-[var(--color-text)] font-medium" : "text-muted"
-                            }`}>
+                            <p
+                              className={`text-xs whitespace-nowrap transition-colors ${
+                                isComplete || isActive
+                                  ? "text-[var(--color-text)] font-medium"
+                                  : "text-muted"
+                              }`}
+                            >
                               {step.label}
                             </p>
                           </div>
                           {i < steps.length - 1 && (
-                            <div className={`flex-1 h-px mx-2 mb-5 transition-colors ${
-                              currentStep > i + 1 ? "bg-[var(--color-gold)]" : "bg-[var(--color-border)]"
-                            }`} />
+                            <div
+                              className={`flex-1 h-px mx-2 mb-5 transition-colors ${
+                                currentStep > i + 1
+                                  ? "bg-[var(--color-gold)]"
+                                  : "bg-[var(--color-border)]"
+                              }`}
+                            />
                           )}
                         </div>
                       );
@@ -191,49 +276,80 @@ export function TrackOrderPage() {
                   </div>
 
                   <div className="border border-[var(--color-border)] bg-[var(--color-surface)] p-4 space-y-1">
-                    <p className="text-sm font-medium text-[var(--color-text)]">{statusConfig[order.status]?.label}</p>
-                    <p className="text-xs text-muted">{statusConfig[order.status]?.description}</p>
+                    <p className="text-sm font-medium text-[var(--color-text)]">
+                      {statusConfig[order.status]?.label}
+                    </p>
+                    <p className="text-xs text-muted">
+                      {statusConfig[order.status]?.description}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {order.items && order.items.length > 0 && (
                 <div className="border p-6 space-y-4">
-                  <p className="text-xs text-muted uppercase tracking-widest">Items Ordered</p>
+                  <p className="text-xs text-muted uppercase tracking-widest">
+                    Items Ordered
+                  </p>
                   <div className="space-y-3">
                     {order.items.map((item, i) => (
-                      <div key={i} className="flex items-center gap-4 py-3 border-b last:border-0">
-                        <img src={item.image} alt={item.name} className="w-14 h-14 object-cover rounded flex-shrink-0" />
+                      <div
+                        key={i}
+                        className="flex items-center gap-4 py-3 border-b last:border-0"
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-14 h-14 object-cover rounded flex-shrink-0"
+                        />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium">{item.name}</p>
-                          <p className="text-xs text-muted mt-0.5">{item.size}</p>
+                          <p className="text-xs text-muted mt-0.5">
+                            {item.size}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted flex-shrink-0">Qty: {item.quantity}</p>
+                        <p className="text-sm text-muted flex-shrink-0">
+                          Qty: {item.quantity}
+                        </p>
                       </div>
                     ))}
                   </div>
 
                   <div className="space-y-2 text-sm border-t pt-4">
-                    <div className="flex justify-between text-muted"><span>Subtotal</span><span>{fmt(subtotal)}</span></div>
-                    <div className="flex justify-between text-muted"><span>Delivery</span><span>{fmt(delivery)}</span></div>
+                    <div className="flex justify-between text-muted">
+                      <span>Subtotal</span>
+                      <span>{fmt(subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between text-muted">
+                      <span>Delivery</span>
+                      <span>{fmt(delivery)}</span>
+                    </div>
                     <div className="flex justify-between font-medium border-t pt-2">
-                      <span>Total</span><span className="accent-gold">{fmt(order.amount_in_cents)}</span>
+                      <span>Total</span>
+                      <span className="accent-gold">
+                        {fmt(order.amount_in_cents)}
+                      </span>
                     </div>
                   </div>
                 </div>
               )}
 
               <div className="border p-6 space-y-3">
-                <p className="text-xs text-muted uppercase tracking-widest">Delivering To</p>
+                <p className="text-xs text-muted uppercase tracking-widest">
+                  Delivering To
+                </p>
                 <div className="text-sm space-y-1">
-                  <p className="font-medium">{order.first_name} {order.last_name}</p>
+                  <p className="font-medium">
+                    {order.first_name} {order.last_name}
+                  </p>
                   <p className="text-muted">{order.address}</p>
-                  <p className="text-muted">{order.city}, {order.province}, {order.postal_code}</p>
+                  <p className="text-muted">
+                    {order.city}, {order.province}, {order.postal_code}
+                  </p>
                   <p className="text-muted">{order.email}</p>
                   <p className="text-muted">{order.phone}</p>
                 </div>
               </div>
-
             </motion.div>
           )}
         </div>

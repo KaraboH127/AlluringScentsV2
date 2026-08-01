@@ -1,0 +1,1 @@
+alter table orders add column delivery_in_cents integer default 9500;

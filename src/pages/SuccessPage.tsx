@@ -27,6 +27,7 @@ interface Order {
   province: string;
   postal_code: string;
   amount_in_cents: number;
+  delivery_in_cents?: number;
   status: string;
   created_at: string;
   items: OrderItem[];
@@ -208,7 +209,9 @@ export function SuccessPage() {
                   <div className="space-y-2">
                     <p className="text-xs uppercase tracking-widest text-muted mb-2">Order Total</p>
                     <p className="text-3xl accent-gold site-heading">{fmt(order.amount_in_cents)}</p>
-                    <p className="text-xs text-muted">Includes R95.00 delivery</p>
+                    <p className="text-xs text-muted">
+                      Includes {fmt(order.delivery_in_cents ?? 9500)} delivery
+                    </p>
                   </div>
                 </div>
               </>

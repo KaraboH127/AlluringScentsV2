@@ -26,7 +26,7 @@ app.use(
     origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
@@ -128,6 +128,7 @@ app.post("/webhook", async (req, res) => {
       province: metadata.province,
       postal_code: metadata.postalCode,
       amount_in_cents: amount,
+      delivery_in_cents: deliveryInCents,
       checkout_id: metadata.checkoutId,
       items: items,
     });
@@ -788,10 +789,14 @@ app.patch("/admin/settings/delivery-fee", requireAdmin, async (req, res) => {
 
   const { error } = await supabase
     .from("settings")
-    .update({ value: String(deliveryFeeCents), updated_at: new Date().toISOString() })
+    .update({
+      value: String(deliveryFeeCents),
+      updated_at: new Date().toISOString(),
+    })
     .eq("key", "delivery_fee_cents");
 
-  if (error) return res.status(500).json({ error: "Failed to update delivery fee." });
+  if (error)
+    return res.status(500).json({ error: "Failed to update delivery fee." });
 
   res.json({ success: true, deliveryFeeCents });
 });
