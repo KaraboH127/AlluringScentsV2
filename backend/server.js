@@ -9,6 +9,7 @@ const { Resend } = require("resend");
 const app = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
 const { generateInvoice } = require("./invoice");
+const sharp = require("sharp");
 
 // ─── Supabase ─────────────────────────────────────────────────────────────────
 
@@ -688,20 +689,32 @@ app.post("/admin/upload-image", requireAdmin, async (req, res) => {
     return res.status(400).json({ error: "Missing required fields." });
   }
 
-  const buffer = Buffer.from(base64, "base64");
-  const filePath = `fragrances/${Date.now()}-${fileName}`;
+  try {
+    const inputBuffer = Buffer.from(base64, "base64");
 
-  const { error } = await supabase.storage
-    .from("fragrance-images")
-    .upload(filePath, buffer, { contentType: mimeType, upsert: false });
+    // Always convert to webp — consistent format, broad support, good compression
+    const webpBuffer = await sharp(inputBuffer)
+      .webp({ quality: 85 })
+      .toBuffer();
 
-  if (error) return res.status(500).json({ error: error.message });
+    const nameWithoutExt = fileName.replace(/\.[^.]+$/, "");
+    const filePath = `fragrances/${Date.now()}-${nameWithoutExt}.webp`;
 
-  const { data } = supabase.storage
-    .from("fragrance-images")
-    .getPublicUrl(filePath);
+    const { error } = await supabase.storage
+      .from("fragrance-images")
+      .upload(filePath, webpBuffer, { contentType: "image/webp", upsert: false });
 
-  res.json({ url: data.publicUrl });
+    if (error) return res.status(500).json({ error: error.message });
+
+    const { data } = supabase.storage
+      .from("fragrance-images")
+      .getPublicUrl(filePath);
+
+    res.json({ url: data.publicUrl });
+  } catch (err) {
+    console.error("Image conversion error:", err.message);
+    res.status(500).json({ error: "Could not process image." });
+  }
 });
 
 // ─── Admin — Download Invoice ─────────────────────────────────────────────────
