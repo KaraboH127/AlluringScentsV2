@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 import type { Fragrance, Collection } from "../types/site";
-
-const API = import.meta.env.VITE_API_URL;
 
 let cachedFragrances: Fragrance[] | null = null;
 let cachedCollections: Collection[] | null = null;
@@ -32,7 +31,7 @@ function mapCollection(c: any): Collection {
     tagline: c.tagline,
     description: c.description,
     prices: c.prices,
-    fragrances: [], // filled in by caller if needed
+    fragrances: [],
   };
 }
 
@@ -42,14 +41,18 @@ export function useFragrances() {
 
   useEffect(() => {
     if (cachedFragrances) return;
-    fetch(`${API}/fragrances`)
-      .then((r) => r.json())
-      .then((data) => {
-        const mapped = Array.isArray(data) ? data.map(mapFragrance) : [];
-        cachedFragrances = mapped;
-        setFragrances(mapped);
-      })
-      .finally(() => setLoading(false));
+    supabase
+      .from("fragrances")
+      .select("*")
+      .eq("active", true)
+      .then(({ data, error }) => {
+        if (!error && data) {
+          const mapped = data.map(mapFragrance);
+          cachedFragrances = mapped;
+          setFragrances(mapped);
+        }
+        setLoading(false);
+      });
   }, []);
 
   return { fragrances, loading };
@@ -61,14 +64,18 @@ export function useCollections() {
 
   useEffect(() => {
     if (cachedCollections) return;
-    fetch(`${API}/collections`)
-      .then((r) => r.json())
-      .then((data) => {
-        const mapped = Array.isArray(data) ? data.map(mapCollection) : [];
-        cachedCollections = mapped;
-        setCollections(mapped);
-      })
-      .finally(() => setLoading(false));
+    supabase
+      .from("collections")
+      .select("*")
+      .eq("active", true)
+      .then(({ data, error }) => {
+        if (!error && data) {
+          const mapped = data.map(mapCollection);
+          cachedCollections = mapped;
+          setCollections(mapped);
+        }
+        setLoading(false);
+      });
   }, []);
 
   return { collections, loading };
@@ -80,14 +87,16 @@ export function useFragranceBySlug(slug: string) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${API}/fragrances/${slug}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("Not found");
-        return r.json();
-      })
-      .then((data) => setFragrance(mapFragrance(data)))
-      .catch(() => setFragrance(null))
-      .finally(() => setLoading(false));
+    supabase
+      .from("fragrances")
+      .select("*")
+      .eq("slug", slug)
+      .eq("active", true)
+      .single()
+      .then(({ data, error }) => {
+        setFragrance(error || !data ? null : mapFragrance(data));
+        setLoading(false);
+      });
   }, [slug]);
 
   return { fragrance, loading };

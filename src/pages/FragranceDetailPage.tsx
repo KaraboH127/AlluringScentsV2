@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { SEOHead } from "../SEOHead";
 import { FragranceHero } from "../components/fragrance/FragranceHero";
@@ -8,40 +8,20 @@ import { Breadcrumb } from "../components/ui/Breadcrumb";
 import { Skeleton } from "../components/ui/Skeleton";
 import { siteConfig } from "../config/site";
 import { useFragranceBySlug, useCollections } from "../hooks/useProducts";
+import { useStock } from "../hooks/useStock";
 import { useCart } from "../store/CartContext";
 import type { SizeOption } from "../types/site";
-
-const API = import.meta.env.VITE_API_URL;
 
 export function FragranceDetailPage() {
   const { slug = "" } = useParams();
   const { fragrance, loading: fragranceLoading } = useFragranceBySlug(slug);
   const { collections, loading: collectionsLoading } = useCollections();
+  const { stock, loading: stockLoading } = useStock(fragrance?.id);
 
-  const [size, setSize] = useState<SizeOption>("50ml");
+  const [size, setSize]         = useState<SizeOption>("50ml");
   const [quantity, setQuantity] = useState(1);
-  const [stock, setStock] = useState<Record<string, number>>({});
-  const [stockLoading, setStockLoading] = useState(true);
-  const [added, setAdded] = useState(false);
-  const { addToCart } = useCart();
-
-  useEffect(() => {
-    if (!fragrance) return;
-    setStockLoading(true);
-    fetch(`${API}/stock/${fragrance.id}`)
-      .then((r) => r.json())
-      .then((data) => {
-        const map: Record<string, number> = {};
-        if (Array.isArray(data)) {
-          data.forEach((row: { size: string; stock: number }) => {
-            map[row.size] = row.stock;
-          });
-        }
-        setStock(map);
-        setStockLoading(false);
-      })
-      .catch(() => setStockLoading(false));
-  }, [fragrance?.id]);
+  const [added, setAdded]       = useState(false);
+  const { addToCart }           = useCart();
 
   const pageLoading = fragranceLoading || collectionsLoading;
 
@@ -70,7 +50,7 @@ export function FragranceDetailPage() {
     );
   }
 
-  const collection = collections.find((c) => c.id === fragrance.collection)!;
+  const collection   = collections.find((c) => c.id === fragrance.collection)!;
   const currentStock = stock[size] ?? 0;
   const isOutOfStock = !stockLoading && currentStock === 0;
 
@@ -116,10 +96,7 @@ export function FragranceDetailPage() {
           fragrance={fragrance}
           collection={collection}
           selectedSize={size}
-          onSizeChange={(s) => {
-            setSize(s);
-            setAdded(false);
-          }}
+          onSizeChange={(s) => { setSize(s); setAdded(false); }}
           quantity={quantity}
           onQuantityChange={setQuantity}
           stock={stock}
@@ -135,17 +112,9 @@ export function FragranceDetailPage() {
 
       <Section>
         <div className="max-w-2xl space-y-5 text-sm text-muted">
-          <p>
-            <span className="accent-gold">Best For:</span> {fragrance.bestFor}
-          </p>
-          <p>
-            <span className="accent-gold">Suggested Occasions:</span>{" "}
-            {fragrance.occasions.join(", ")}
-          </p>
-          <p>
-            <span className="accent-gold">Suggested Personality:</span>{" "}
-            {fragrance.personality}
-          </p>
+          <p><span className="accent-gold">Best For:</span> {fragrance.bestFor}</p>
+          <p><span className="accent-gold">Suggested Occasions:</span> {fragrance.occasions.join(", ")}</p>
+          <p><span className="accent-gold">Suggested Personality:</span> {fragrance.personality}</p>
         </div>
       </Section>
     </>

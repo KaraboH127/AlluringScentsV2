@@ -1,37 +1,17 @@
-import { useEffect, useState } from "react";
 import { formatCurrency } from "../../config/site";
 import { useFragrances, useCollections } from "../../hooks/useProducts";
+import { useStock } from "../../hooks/useStock";
 import { useCart } from "../../store/CartContext";
 import type { CartItem as CartEntry } from "../../store/CartContext";
 import { QuantitySelector } from "../ui/QuantitySelector";
 import { Image } from "../ui/Image";
 import { Skeleton } from "../ui/Skeleton";
 
-const API = import.meta.env.VITE_API_URL;
-
 export function CartItem({ item }: { item: CartEntry }) {
   const { updateQuantity, removeFromCart } = useCart();
   const { fragrances, loading: fragrancesLoading }   = useFragrances();
   const { collections, loading: collectionsLoading } = useCollections();
-  const [stock, setStock]               = useState<number | null>(null);
-  const [stockLoading, setStockLoading] = useState(true);
-
-  useEffect(() => {
-    setStockLoading(true);
-    fetch(`${API}/stock/${item.fragranceId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          const row = data.find((r: { size: string; stock: number }) => r.size === item.size);
-          setStock(row?.stock ?? 0);
-        }
-        setStockLoading(false);
-      })
-      .catch(() => {
-        setStock(null);
-        setStockLoading(false);
-      });
-  }, [item.fragranceId, item.size]);
+  const { stock: stockMap, loading: stockLoading }   = useStock(item.fragranceId);
 
   if (fragrancesLoading || collectionsLoading) {
     return (
@@ -53,6 +33,7 @@ export function CartItem({ item }: { item: CartEntry }) {
 
   const collection = collections.find((entry) => entry.id === fragrance.collection)!;
   const unitPrice   = collection.prices[item.size];
+  const stock       = stockMap[item.size] ?? null;
 
   const isOutOfStock = stock !== null && stock === 0;
   const isLowStock    = stock !== null && stock > 0 && stock <= 5;

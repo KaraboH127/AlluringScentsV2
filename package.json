@@ -12,6 +12,7 @@
     "postbuild": "npm run optimize-images && npm run generate-sitemap"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.111.0",
     "clsx": "2.1.1",
     "framer-motion": "^12.42.2",
     "react": "19.2.6",
