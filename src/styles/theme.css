@@ -17,7 +17,7 @@
 }
 
 body {
-  font-family: "Cormorant Garant", "Times New Roman", "Georgia", serif;
+  font-family: "Cormorant Garamond", "Times New Roman", "Georgia", serif;
   background: var(--color-bg);
   color: var(--color-text);
 }
@@ -125,7 +125,7 @@ hr, .divider {
 
 /* General utilities */
 .site-heading {
-  font-family: "Cormorant Garant", "Times New Roman", "Georgia", serif;
+  font-family: "Cormorant Garamond", "Times New Roman", "Georgia", serif;
   font-weight: 400;
   letter-spacing: 0.02em;
 }
