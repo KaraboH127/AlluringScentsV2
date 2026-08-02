@@ -1,6 +1,6 @@
 -- ============================================================
--- ALLURING SCENTS — FULL DATABASE SETUP SCRIPT
--- Run this in Supabase SQL Editor in one go
+-- ALLURING SCENTS — COMPLETE DATABASE SETUP SCRIPT (FINAL)
+-- Run this in Supabase SQL Editor in one go, on a fresh project
 -- ============================================================
 
 
@@ -23,6 +23,7 @@ create table orders (
   province text not null,
   postal_code text not null,
   amount_in_cents integer not null,
+  delivery_in_cents integer default 9500,
   currency text default 'ZAR',
   status text default 'succeeded',
   checkout_id text,
@@ -51,6 +52,7 @@ create table collections (
   description text not null,
   prices jsonb not null default '{"10ml": 0, "50ml": 0, "100ml": 0}',
   active boolean default true,
+  prices_updated_at timestamptz default now(),
   created_at timestamptz default now()
 );
 
@@ -68,6 +70,8 @@ create table fragrances (
   personality text not null,
   image_url text not null,
   active boolean default true,
+  sale_prices jsonb default null,
+  sale_label text default null,
   created_at timestamptz default now()
 );
 
@@ -77,6 +81,13 @@ create table admin_config (
   password_hash text not null
 );
 
+-- Settings
+create table settings (
+  key text primary key,
+  value text not null,
+  updated_at timestamptz default now()
+);
+
 
 -- ── Step 3: Enable RLS on all tables ─────────────────────────
 alter table orders enable row level security;
@@ -84,6 +95,7 @@ alter table inventory enable row level security;
 alter table collections enable row level security;
 alter table fragrances enable row level security;
 alter table admin_config enable row level security;
+alter table settings enable row level security;
 
 
 -- ── Step 4: RLS Policies ─────────────────────────────────────
@@ -106,6 +118,10 @@ create policy "Service role can manage inventory"
 on inventory for all to service_role
 using (true)
 with check (true);
+
+create policy "Public can read inventory"
+on inventory for select to anon
+using (true);
 
 -- Collections
 create policy "Public can read collections"
@@ -131,6 +147,16 @@ with check (true);
 create policy "Service role can read admin config"
 on admin_config for select to service_role
 using (true);
+
+-- Settings
+create policy "Public can read settings"
+on settings for select to anon
+using (true);
+
+create policy "Service role can manage settings"
+on settings for all to service_role
+using (true)
+with check (true);
 
 
 -- ── Step 5: verify_password function ─────────────────────────
@@ -216,13 +242,17 @@ insert into inventory (fragrance_id, fragrance_name, collection, size, stock) va
   ('signature', 'Signature', 'private', '100ml', 10);
 
 
--- ── Step 9: Admin password ────────────────────────────────────
+-- ── Step 9: Seed default settings ─────────────────────────────
+insert into settings (key, value) values ('delivery_fee_cents', '9500');
+
+
+-- ── Step 10: Admin password ────────────────────────────────────
 -- !! REPLACE 'THEIR_PASSWORD_HERE' with the client's chosen password !!
 insert into admin_config (id, password_hash)
 values (1, crypt('THEIR_PASSWORD_HERE', gen_salt('bf')));
 
 
--- ── Step 10: Storage policies ─────────────────────────────────
+-- ── Step 11: Storage policies ─────────────────────────────────
 -- !! IMPORTANT: Before running these two lines, you must manually
 --    create the storage bucket in Supabase first:
 --    Storage → New Bucket → Name: "fragrance-images" → Public: ON
@@ -241,5 +271,5 @@ with check (bucket_id = 'fragrance-images');
 -- ============================================================
 -- DONE. Verify by checking the Table Editor in Supabase.
 -- You should see: orders, inventory, collections, fragrances,
--- admin_config — all with RLS enabled.
+-- admin_config, settings — all with RLS enabled.
 -- ============================================================
