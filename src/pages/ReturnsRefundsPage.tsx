@@ -86,7 +86,22 @@ export function ReturnsRefundsPage() {
 
           {/* 4 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">4. Refunds</h2>
+            <h2 className="text-xl site-heading">4. Sale Items</h2>
+            <p className="text-sm text-muted leading-relaxed">
+              Products purchased at a reduced or discounted price remain eligible for return under the
+              same terms set out in this Policy, subject to the same conditions regarding condition,
+              packaging, and time limits.
+            </p>
+            <p className="text-sm text-muted leading-relaxed">
+              Where a return or refund is approved for a product purchased on sale, the refund amount
+              will reflect the price actually paid at the time of purchase, and not the original,
+              pre-discount price of the product.
+            </p>
+          </div>
+
+          {/* 5 */}
+          <div className="space-y-3">
+            <h2 className="text-xl site-heading">5. Refunds</h2>
             <p className="text-sm text-muted leading-relaxed">
               Approved refunds will be processed using the original payment method wherever reasonably
               possible. Refund processing times may vary depending on the payment provider but generally
@@ -94,19 +109,20 @@ export function ReturnsRefundsPage() {
             </p>
           </div>
 
-          {/* 5 */}
+          {/* 6 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">5. Exchanges</h2>
+            <h2 className="text-xl site-heading">6. Exchanges</h2>
             <p className="text-sm text-muted leading-relaxed">
               Where stock is available, we may exchange eligible unopened products for another product
               of equal value. If there is a price difference, you may be required to pay the balance or
-              receive a partial refund, as applicable.
+              receive a partial refund, as applicable. Where the original product was purchased on sale,
+              any exchange value will be calculated based on the price actually paid.
             </p>
           </div>
 
-          {/* 6 */}
+          {/* 7 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">6. Return Procedure</h2>
+            <h2 className="text-xl site-heading">7. Return Procedure</h2>
             <p className="text-sm text-muted leading-relaxed">
               To request a return, please contact us at{" "}
               <a href="mailto:alluringscents6@gmail.com" className="accent-gold hover:underline">
@@ -126,9 +142,9 @@ export function ReturnsRefundsPage() {
             </p>
           </div>
 
-          {/* 7 */}
+          {/* 8 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">7. Inspection of Returned Goods</h2>
+            <h2 className="text-xl site-heading">8. Inspection of Returned Goods</h2>
             <p className="text-sm text-muted leading-relaxed">
               All returned products will be inspected upon receipt to determine whether they comply
               with the requirements of this Policy. We reserve the right to decline a return if, upon
@@ -139,9 +155,9 @@ export function ReturnsRefundsPage() {
             </p>
           </div>
 
-          {/* 8 */}
+          {/* 9 */}
           <div className="space-y-3">
-            <h2 className="text-xl site-heading">8. Contact Us</h2>
+            <h2 className="text-xl site-heading">9. Contact Us</h2>
             <p className="text-sm text-muted leading-relaxed">
               If you have any questions about this Policy, please contact us at{" "}
               <a href="mailto:alluringscents6@gmail.com" className="accent-gold hover:underline">
