@@ -1,24 +1,13 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../config/site";
+import { useDeliveryFee } from "../../hooks/useDeliveryFee";
 import { useCart } from "../../store/CartContext";
 import { Button } from "../ui/Button";
 import { Skeleton } from "../ui/Skeleton";
 
-const API = import.meta.env.VITE_API_URL;
-
 export function CartSummary() {
   const { subtotal } = useCart();
-  const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
-  const [deliveryLoading, setDeliveryLoading]   = useState(true);
-
-  useEffect(() => {
-    fetch(`${API}/settings/delivery-fee`)
-      .then((r) => r.json())
-      .then((data) => setDeliveryFeeCents(data.deliveryFeeCents ?? 9500))
-      .catch(() => setDeliveryFeeCents(9500))
-      .finally(() => setDeliveryLoading(false));
-  }, []);
+  const { deliveryFeeCents, loading: deliveryLoading } = useDeliveryFee();
 
   const deliveryFee = subtotal > 0 ? deliveryFeeCents / 100 : 0;
   const total       = subtotal + deliveryFee;

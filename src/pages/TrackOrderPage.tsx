@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SEOHead } from "../SEOHead";
 import { Section } from "../components/layout/Section";
 import { Button } from "../components/ui/Button";
 import { Image } from "../components/ui/Image";
 import { Input } from "../components/ui/Input";
 import { Skeleton } from "../components/ui/Skeleton";
+import { useDeliveryFee } from "../hooks/useDeliveryFee";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -38,7 +39,7 @@ const fmt = (cents: number) =>
     cents / 100,
   );
 
-const statusConfig: Record<
+const statusConfig: Record <
   string,
   { label: string; description: string; step: number }
 > = {
@@ -71,14 +72,7 @@ export function TrackOrderPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
-  const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
-
-  useEffect(() => {
-    fetch(`${API}/settings/delivery-fee`)
-      .then((r) => r.json())
-      .then((data) => setDeliveryFeeCents(data.deliveryFeeCents ?? 9500))
-      .catch(() => setDeliveryFeeCents(9500));
-  }, []);
+  const { deliveryFeeCents } = useDeliveryFee();
 
   const handleTrack = async () => {
     if (!orderId.trim()) return;

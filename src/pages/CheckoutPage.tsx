@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { SEOHead } from "../SEOHead";
 import { CheckoutSummary } from "../components/cart/CheckoutSummary";
 import { Section } from "../components/layout/Section";
@@ -6,6 +6,7 @@ import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Skeleton } from "../components/ui/Skeleton";
 import { useFragrances, useCollections } from "../hooks/useProducts";
+import { useDeliveryFee } from "../hooks/useDeliveryFee";
 import { useCart } from "../store/CartContext";
 
 const API = import.meta.env.VITE_API_URL;
@@ -14,18 +15,9 @@ export function CheckoutPage() {
   const { items, subtotal } = useCart();
   const { fragrances } = useFragrances();
   const { collections } = useCollections();
+  const { deliveryFeeCents, loading: deliveryLoading } = useDeliveryFee();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [deliveryFeeCents, setDeliveryFeeCents] = useState(9500);
-  const [deliveryLoading, setDeliveryLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`${API}/settings/delivery-fee`)
-      .then((r) => r.json())
-      .then((data) => setDeliveryFeeCents(data.deliveryFeeCents ?? 9500))
-      .catch(() => setDeliveryFeeCents(9500))
-      .finally(() => setDeliveryLoading(false));
-  }, []);
 
   const deliveryFee = subtotal > 0 ? deliveryFeeCents / 100 : 0;
   const total = subtotal + deliveryFee;
