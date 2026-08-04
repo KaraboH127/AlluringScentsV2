@@ -33,8 +33,8 @@ const FRAGRANCE_COLLECTIONS = {
 
 function getItemUnitPrice(item) {
   // Prefer sale price if item was purchased on sale
-  if (item.salePrice) return item.salePrice * 100;
-  if (item.originalPrice) return item.originalPrice * 100;
+  if (item.salePrice != null) return item.salePrice * 100;
+  if (item.originalPrice != null) return item.originalPrice * 100;
 
   // Fallback for older orders without price data saved
   const slug = item.name?.toLowerCase().replace(/\s+/g, "-");
