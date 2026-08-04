@@ -70,11 +70,13 @@ function normalizeOrder(order) {
     province: order.province,
     postal_code: order.postal_code ?? order.postalCode,
     amount_in_cents: order.amount_in_cents ?? order.amountInCents,
+    delivery_in_cents: order.delivery_in_cents ?? order.deliveryInCents ?? 9500,
     status: order.status ?? "succeeded",
     created_at: order.created_at ?? new Date().toISOString(),
     items: order.items ?? [],
   };
 }
+
 
 async function generateInvoice(rawOrder) {
   const order = normalizeOrder(rawOrder);
