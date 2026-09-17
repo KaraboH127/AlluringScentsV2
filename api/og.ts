@@ -13,7 +13,7 @@ const ogMeta: Record<string, { title: string; description: string }> = {
   },
   "/collections": {
     title: "Collections | Alluring Scents",
-    description: "Explore the Alluring Scents fragrance collections — Standard and Private. Luxury perfumes crafted for every moment.",
+    description: "Explore the All uring Scents fragrance collections — Standard and Private. Luxury perfumes crafted for every moment.",
   },
   "/pricing": {
     title: "Pricing | Alluring Scents",
